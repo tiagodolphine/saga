@@ -1,0 +1,8 @@
+org/kie/kogito/PaymentService.class
+org/kie/kogito/ConfigurationHolder.class
+org/kie/kogito/KafkaProducer.class
+org/kie/kogito/ShippingService.class
+org/kie/kogito/BaseService.class
+org/kie/kogito/StockService.class
+org/kie/kogito/ManagementResource.class
+org/kie/kogito/RequestEvent.class
