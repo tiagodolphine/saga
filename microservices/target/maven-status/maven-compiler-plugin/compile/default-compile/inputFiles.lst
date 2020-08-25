@@ -1,8 +1,0 @@
-/home/tiagodolphine/dev/redhat/fork/saga/microservices/src/main/java/org/kie/kogito/ManagementResource.java
-/home/tiagodolphine/dev/redhat/fork/saga/microservices/src/main/java/org/kie/kogito/PaymentService.java
-/home/tiagodolphine/dev/redhat/fork/saga/microservices/src/main/java/org/kie/kogito/RequestEvent.java
-/home/tiagodolphine/dev/redhat/fork/saga/microservices/src/main/java/org/kie/kogito/BaseService.java
-/home/tiagodolphine/dev/redhat/fork/saga/microservices/src/main/java/org/kie/kogito/KafkaProducer.java
-/home/tiagodolphine/dev/redhat/fork/saga/microservices/src/main/java/org/kie/kogito/StockService.java
-/home/tiagodolphine/dev/redhat/fork/saga/microservices/src/main/java/org/kie/kogito/ConfigurationHolder.java
-/home/tiagodolphine/dev/redhat/fork/saga/microservices/src/main/java/org/kie/kogito/ShippingService.java
