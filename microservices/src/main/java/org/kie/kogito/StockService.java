@@ -64,4 +64,9 @@ public class StockService extends BaseService {
     String serviceName() {
         return "stock";
     }
+
+    @Override
+    Long delay() {
+        return configurationHolder.getStockDelay().get();
+    }
 }

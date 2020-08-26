@@ -64,4 +64,9 @@ public class ShippingService extends BaseService {
     String serviceName() {
         return "shipping";
     }
+
+    @Override
+    Long delay() {
+        return configurationHolder.getShippingDelay().get();
+    }
 }

@@ -37,9 +37,11 @@ public abstract class BaseService {
 
     abstract AtomicBoolean isFailed();
 
+    abstract Long delay();
+
     void handleRequest(String input) {
         Uni.createFrom().item(input)
-                .onItem().delayIt().by(Duration.ofSeconds(15))
+                .onItem().delayIt().by(Duration.ofSeconds(delay()))
                 .invoke(i -> logger.info("Published {} {}", serviceName(), i))
                 .subscribe()
                 .with(i -> Optional.of(isFailed())

@@ -2,6 +2,7 @@ target/
 /local
 
 **/.idea
+**/.idea/**
 
 # Repository wide ignore mac DS_Store files
 .DS_Store

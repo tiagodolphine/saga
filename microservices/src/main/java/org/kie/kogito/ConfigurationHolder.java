@@ -17,15 +17,21 @@
 package org.kie.kogito;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Singleton;
 
 @Singleton
 public class ConfigurationHolder {
 
+    private static final Long DEFAULT_DELAY = 10L;
+
     private AtomicBoolean payment = new AtomicBoolean();
     private AtomicBoolean stock = new AtomicBoolean();
     private AtomicBoolean shipping = new AtomicBoolean();
+    private AtomicLong paymentDelay = new AtomicLong(DEFAULT_DELAY);
+    private AtomicLong stockDelay = new AtomicLong(DEFAULT_DELAY);
+    private AtomicLong shippingDelay = new AtomicLong(DEFAULT_DELAY);
 
     public AtomicBoolean getPayment() {
         return payment;
@@ -42,5 +48,17 @@ public class ConfigurationHolder {
     public static Boolean toggle(AtomicBoolean item) {
         item.set(!item.get());
         return item.get();
+    }
+
+    public AtomicLong getPaymentDelay() {
+        return paymentDelay;
+    }
+
+    public AtomicLong getStockDelay() {
+        return stockDelay;
+    }
+
+    public AtomicLong getShippingDelay() {
+        return shippingDelay;
     }
 }

@@ -37,6 +37,24 @@ public class ManagementResource {
         return toggle(configurationHolder.getShipping());
     }
 
+    @PUT
+    @Path("/payment/delay")
+    public void failPayment(Long delay) {
+        configurationHolder.getPaymentDelay().set(delay);
+    }
+
+    @PUT
+    @Path("/stock/delay")
+    public void failStock(Long delay) {
+        configurationHolder.getStockDelay().set(delay);
+    }
+
+    @PUT
+    @Path("/shipping/delay")
+    public void failShipping(Long delay) {
+        configurationHolder.getShippingDelay().set(delay);
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public ConfigurationHolder publish() {

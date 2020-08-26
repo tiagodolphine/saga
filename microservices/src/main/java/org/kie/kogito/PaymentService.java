@@ -68,4 +68,9 @@ public class PaymentService extends BaseService {
     String serviceName() {
         return "payment";
     }
+
+    @Override
+    Long delay() {
+        return configurationHolder.getPaymentDelay().get();
+    }
 }
