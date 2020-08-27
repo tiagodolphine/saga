@@ -50,8 +50,8 @@ public class PaymentService extends BaseService {
     }
 
     @Incoming("payment-cancel")
-    public void compensations(Multi<String> input) {
-        input.invoke(i -> logger.info("Received Payment {}", i));
+    public void compensations(String input) {
+        logger.info("Cancel Payment received {}", input);
     }
 
     @Override

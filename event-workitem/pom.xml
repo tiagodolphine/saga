@@ -12,7 +12,7 @@
   <groupId>org.jbpm.contrib</groupId>
   <artifactId>event-workitem</artifactId>
   <name>event-workitem</name>
-  <version>7.50.0.Final</version>
+  <version>7.53.0.Final</version>
 
   <dependencyManagement>
     <dependencies>

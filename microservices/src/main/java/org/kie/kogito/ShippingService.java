@@ -46,8 +46,8 @@ public class ShippingService extends BaseService {
     }
 
     @Incoming("shipping-cancel")
-    public void compensations(Multi<String> input) {
-        input.invoke(i -> logger.info("Received Shipping {}", i));
+    public void compensations(String input) {
+        logger.info("Cancel Shipping received {}", input);
     }
 
     @Override

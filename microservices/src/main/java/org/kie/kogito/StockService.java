@@ -32,7 +32,7 @@ public class StockService extends BaseService {
     @Incoming("stock-request")
     @Outgoing("internal-stock")
     public Multi<String> requests(Multi<String> input) {
-        return input.invoke(i -> logger.info("Received {}} {}", serviceName(), i));
+        return input.invoke(i -> logger.info("Received {} {}", serviceName(), i));
     }
 
     @Incoming("internal-stock")
@@ -46,8 +46,8 @@ public class StockService extends BaseService {
     }
 
     @Incoming("stock-cancel")
-    public void compensations(Multi<String> input) {
-        input.invoke(i -> logger.info("Received Stock {}", i));
+    public void compensations(String input) {
+        logger.info("Cancel Stock received {}", input);
     }
 
     @Override

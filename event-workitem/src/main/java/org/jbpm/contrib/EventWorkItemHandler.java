@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -42,15 +44,15 @@ import org.kie.kafka.ProducerCreator;
         icon = "CustomDefinitions.png",
         parameters = {
                 @WidParameter(name = "requestTopic", required = true),
-                @WidParameter(name = "successResponseTopic", required = true),
-                @WidParameter(name = "errorResponseTopic", required = true),
-                @WidParameter(name = "requestCompensationTopic", required = true)
+                @WidParameter(name = "successResponseTopic", required = false),
+                @WidParameter(name = "errorResponseTopic", required = false),
+                @WidParameter(name = "requestCompensationTopic", required = false)
         },
         results = {
                 @WidResult(name = "Result")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "org.jbpm.contrib", artifact = "event-workitem", version = "7.40.0.Final")
+                @WidMavenDepends(group = "org.jbpm.contrib", artifact = "event-workitem", version = "7.52.0.Final")
         },
         serviceInfo = @WidService(category = "event-workitem", description = "Event work item",
                 keywords = "",
@@ -59,7 +61,8 @@ import org.kie.kafka.ProducerCreator;
 )
 public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
-    private final AtomicBoolean stop = new AtomicBoolean(false);
+    Producer<String, String> producer;
+    Map<Long, CompletableFuture> consumers = new ConcurrentHashMap<>();
 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager manager) {
@@ -74,7 +77,7 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
             System.out.println("==========SAGA Kafka WorkItemHandler ============");
 
-            Producer<String, String> producer = ProducerCreator.createProducer();
+            producer = Optional.ofNullable(producer).orElseGet(() -> ProducerCreator.createProducer());
             ProducerRecord<String, String> record = new ProducerRecord<>(requestTopic,
                                                                          UUID.randomUUID().toString(),
                                                                          "Request payload");
@@ -83,12 +86,18 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
             System.out.println("Record sent with key to partition " + metadata.partition()
                                        + " with offset " + metadata.offset());
 
+            if (StringUtils.isAllEmpty(successResponseTopic, errorResponseTopic)) {
+                completeWorkItemAsync(workItem, new Event("", "", "success"));
+                return;
+            }
+
             //start consumer in a different thread (async flow)
-            CompletableFuture.runAsync(() -> runErrorConsumer(workItem, successResponseTopic, errorResponseTopic))
+            consumers.put(workItem.getId(), CompletableFuture.runAsync(() -> runConsumer(workItem, successResponseTopic,
+                                                                                         errorResponseTopic))
                     .exceptionally(t -> {
                         handleException(t);
                         return null;
-                    });
+                    }));
         } catch (Throwable cause) {
             handleException(cause);
         }
@@ -97,7 +106,9 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
     @Override
     public void abortWorkItem(WorkItem workItem,
                               WorkItemManager manager) {
-        stop.set(true);
+        consumers.get(workItem.getId()).cancel(true);
+        consumers.remove(workItem.getId());
+        manager.abortWorkItem(workItem.getId());
     }
 
     /**
@@ -106,7 +117,12 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
      * @param successResponseTopic
      * @param errorResponseTopic
      */
-    void runErrorConsumer(WorkItem workItem, String successResponseTopic, String errorResponseTopic) {
+    void runConsumer(WorkItem workItem, String successResponseTopic, String errorResponseTopic) {
+        if (StringUtils.isAllEmpty(successResponseTopic, errorResponseTopic)) {
+            completeWorkItemAsync(workItem, new Event("", "", "success"));
+            return;
+        }
+
         System.out.println("========== START kafka consumer ============");
 
         Consumer<String, String> consumer = ConsumerCreator.createConsumer(successResponseTopic, errorResponseTopic);
@@ -142,21 +158,7 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
                             .map(t -> "success")
                             .orElse("error");
 
-                    Map<String, Object> results = new HashMap<String, Object>();
-                    results.put("Result", new Event("123", "456", type));
-
-                    final String deploymentId = ((WorkItemImpl) workItem).getDeploymentId();
-                    RuntimeManager manager = RuntimeManagerRegistry.get().getManager(deploymentId);
-                    final long processInstanceId = workItem.getProcessInstanceId();
-                    final long workItemId = workItem.getId();
-
-                    //complete the work item with the received event
-                    if (manager != null) {
-                        RuntimeEngine engine = manager.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId));
-                        engine.getKieSession().getWorkItemManager().completeWorkItem(workItemId,
-                                                                                     results);
-                        manager.disposeRuntimeEngine(engine);
-                    }
+                    completeWorkItemAsync(workItem, new Event("123", "456", type));
                     stop.set(true);
                 });
                 // commits the offset of record to broker.
@@ -169,6 +171,22 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
             consumer.close();
             e.printStackTrace();
             handleException(new RuntimeException("Error from kafka", e));
+        }
+    }
+
+    private void completeWorkItemAsync(WorkItem workItem, Event event) {
+        Map<String, Object> results = new HashMap<>();
+        results.put("Result", event);
+        String deploymentId = ((WorkItemImpl) workItem).getDeploymentId();
+        Long processInstanceId = workItem.getProcessInstanceId();
+        Long workItemId = workItem.getId();
+        RuntimeManager manager = RuntimeManagerRegistry.get().getManager(deploymentId);
+
+        //complete the work item with the received event
+        if (manager != null) {
+            RuntimeEngine engine = manager.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId));
+            engine.getKieSession().getWorkItemManager().completeWorkItem(workItemId, results);
+            manager.disposeRuntimeEngine(engine);
         }
     }
 }
