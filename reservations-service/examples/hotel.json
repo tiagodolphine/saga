@@ -1,0 +1,13 @@
+{
+  "id": "HOTEL-00001",
+  "guest": {
+    "firstName": "Ruben",
+    "lastName": "Romero Montes",
+    "passport": "X2342343-D"
+  },
+  "ref": "FASTHOTEL-MADRID-0001",
+  "type": "STANDARD",
+  "start": "2020-08-25T20:00:00+02:00",
+  "end": "2020-08-27T13:00:00+02:00"
+}
+
