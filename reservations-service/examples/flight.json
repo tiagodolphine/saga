@@ -1,0 +1,24 @@
+{
+  "id": "FLI-00001",
+  "passenger": {
+    "firstName": "Ruben",
+    "lastName": "Romero Montes",
+    "passport": "X2342343-D"
+  },
+  "itinerary": [
+    {
+      "departure": "LAX",
+      "arrival": "MAD",
+      "departureAt": "2020-08-24T07:00:00-07:00",
+      "flight": "IB6170",
+      "seat": "8D"
+    },
+    {
+      "departure": "MAD",
+      "arrival": "LAX",
+      "departureAt": "2020-08-28T07:00:00+02:00",
+      "flight": "IB6170",
+      "seat": "12C"
+    }
+  ]
+}
