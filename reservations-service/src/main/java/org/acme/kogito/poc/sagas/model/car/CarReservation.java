@@ -3,15 +3,15 @@ package org.acme.kogito.poc.sagas.model.car;
 import java.time.ZonedDateTime;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.acme.kogito.poc.sagas.model.Person;
 import org.acme.kogito.poc.sagas.model.Reservation;
 
+@RegisterForReflection
 public class CarReservation implements Reservation {
 
-    @NotNull
-    @JsonProperty(index = 0)
-    private String id;
+    public static final String RESOURCE_NAME = "cars";
+
     @NotNull
     private Person driver;
     @NotNull
@@ -25,14 +25,6 @@ public class CarReservation implements Reservation {
     @NotNull
     private String startOffice;
     private String returnOffice;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public Person getDriver() {
         return driver;

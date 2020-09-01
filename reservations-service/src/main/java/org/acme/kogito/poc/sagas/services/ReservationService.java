@@ -5,40 +5,37 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.enterprise.context.ApplicationScoped;
 
 import org.acme.kogito.poc.sagas.model.Reservation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@ApplicationScoped
-public class ReservationService<T extends Reservation> {
+public class ReservationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReservationService.class);
 
-    private Map<String, T> reservations = new HashMap<>();
+    private Map<String, Reservation> reservations = new HashMap<>();
     private Set<String> cancellations = new HashSet<>();
 
-    public Collection<T> list() {
+    public Collection<Reservation> list() {
         return reservations.values();
     }
 
-    public T get(String id) {
+    public Reservation get(String id) {
         return reservations.get(id);
     }
 
-    public Boolean add(T reservation) {
-        if(reservations.containsKey(reservation.getId())) {
-            LOGGER.info("Ignoring repeated reservation: {}", reservation.getId());
+    public Boolean add(String id, Reservation reservation) {
+        if (reservations.containsKey(id)) {
+            LOGGER.info("Ignoring repeated reservation: {}", id);
             return false;
         }
-        if (cancellations.contains(reservation.getId())){
-            LOGGER.info("Ignoring cancelled reservation: {}", reservation.getId());
+        if (cancellations.contains(id)) {
+            LOGGER.info("Ignoring cancelled reservation: {}", id);
             return false;
         }
-        reservations.put(reservation.getId(), reservation);
+        reservations.put(id, reservation);
         return true;
     }
 

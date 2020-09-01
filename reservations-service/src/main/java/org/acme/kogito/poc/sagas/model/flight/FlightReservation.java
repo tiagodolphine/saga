@@ -1,31 +1,21 @@
 package org.acme.kogito.poc.sagas.model.flight;
 
 import java.util.Collection;
-
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.acme.kogito.poc.sagas.model.Person;
 import org.acme.kogito.poc.sagas.model.Reservation;
 
+@RegisterForReflection
 public class FlightReservation implements Reservation {
 
-    @JsonProperty(index = 0)
-    private String id;
+    public static final String RESOURCE_NAME = "flights";
+
     @NotNull
     private Person passenger;
     @NotNull
     private Collection<Trip> itinerary;
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public Person getPassenger() {
         return passenger;
