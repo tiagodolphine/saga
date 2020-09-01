@@ -48,6 +48,7 @@ public class StockService extends BaseService {
     @Incoming("stock-cancel")
     public void compensations(String input) {
         logger.info("Cancel Stock received {}", input);
+        cancel(input);
     }
 
     @Override

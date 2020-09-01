@@ -1,0 +1,16 @@
+[
+  [
+    "name" : "EventWorkItemHandler",
+    "parameters" : [
+    "requestTopic" : new StringDataType(),
+    "successResponseTopic" : new StringDataType(),
+    "errorResponseTopic" : new StringDataType(),
+    "requestCompensationTopic" : new StringDataType()
+  ],
+    "results" : [
+    "Result" : new ObjectDataType()
+  ],
+    "displayName" : "SAGA Event Work Item",
+    "icon" : ""
+  ]
+]

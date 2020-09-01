@@ -17,8 +17,11 @@
 package org.kie.kogito;
 
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
@@ -28,6 +31,8 @@ import org.slf4j.LoggerFactory;
 public abstract class BaseService {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    Map<String, Boolean> canceled = new ConcurrentHashMap<>();
 
     abstract Emitter<String> errorEmitter();
 
@@ -39,15 +44,35 @@ public abstract class BaseService {
 
     abstract Long delay();
 
+    void cancel(String item) {
+        canceled.put(item, Boolean.TRUE);
+    }
+
+    void processed(String item) {
+        canceled.remove(item);
+    }
+
+    Boolean isCanceled(String item) {
+        //return canceled.getOrDefault(item, Boolean.FALSE);
+        return Boolean.FALSE;
+    }
+
     void handleRequest(String input) {
         Uni.createFrom().item(input)
                 .onItem().delayIt().by(Duration.ofSeconds(delay()))
-                .invoke(i -> logger.info("Published {} {}", serviceName(), i))
                 .subscribe()
-                .with(i -> Optional.of(isFailed())
-                        .filter(AtomicBoolean::get)
-                        .map(s -> errorEmitter())
-                        .orElseGet(() -> successEmitter())
-                        .send(i));
+                .with(i -> {
+                    Optional.of(isCanceled(input))
+                            .filter(Boolean.FALSE::equals)
+                            .ifPresent(c -> {
+                                Optional.of(isFailed())
+                                        .filter(AtomicBoolean::get)
+                                        .map(s -> errorEmitter())
+                                        .orElseGet(() -> successEmitter())
+                                        .send(i);
+                                logger.info("Published {} {}", serviceName(), i);
+                            });
+                    processed(i);
+                });
     }
 }

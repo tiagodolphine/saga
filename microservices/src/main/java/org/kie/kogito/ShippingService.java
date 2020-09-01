@@ -48,6 +48,7 @@ public class ShippingService extends BaseService {
     @Incoming("shipping-cancel")
     public void compensations(String input) {
         logger.info("Cancel Shipping received {}", input);
+        cancel(input);
     }
 
     @Override
