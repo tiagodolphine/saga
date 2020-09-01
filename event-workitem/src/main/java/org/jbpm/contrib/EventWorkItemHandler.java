@@ -36,8 +36,8 @@ import org.kie.kafka.Event;
 import org.kie.kafka.IKafkaConstants;
 import org.kie.kafka.ProducerCreator;
 
-@Wid(widfile = "CustomDefinitions.wid", name = "CustomDefinitions",
-        displayName = "CustomDefinitions",
+@Wid(widfile = "CustomDefinitions.wid", name = "EventWorkItemHandler",
+        displayName = "EventWorkItemHandler",
         defaultHandler = "mvel: new org.jbpm.contrib.EventWorkItemHandler()",
         documentation = "event-workitem/index.html",
         category = "event-workitem",
@@ -52,7 +52,7 @@ import org.kie.kafka.ProducerCreator;
                 @WidResult(name = "Result")
         },
         mavenDepends = {
-                @WidMavenDepends(group = "org.jbpm.contrib", artifact = "event-workitem", version = "7.52.0.Final")
+                @WidMavenDepends(group = "org.jbpm.contrib", artifact = "event-workitem", version = "7.53.0.Final")
         },
         serviceInfo = @WidService(category = "event-workitem", description = "Event work item",
                 keywords = "",
@@ -62,7 +62,7 @@ import org.kie.kafka.ProducerCreator;
 public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     Producer<String, String> producer;
-    Map<Long, CompletableFuture> consumers = new ConcurrentHashMap<>();
+    Map<Long, AtomicBoolean> consumers = new ConcurrentHashMap<>();
 
     public void executeWorkItem(WorkItem workItem,
                                 WorkItemManager manager) {
@@ -92,12 +92,12 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
             }
 
             //start consumer in a different thread (async flow)
-            consumers.put(workItem.getId(), CompletableFuture.runAsync(() -> runConsumer(workItem, successResponseTopic,
-                                                                                         errorResponseTopic))
+            CompletableFuture.runAsync(() -> runConsumer(workItem, successResponseTopic,
+                                                         errorResponseTopic))
                     .exceptionally(t -> {
                         handleException(t);
                         return null;
-                    }));
+                    });
         } catch (Throwable cause) {
             handleException(cause);
         }
@@ -106,9 +106,12 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
     @Override
     public void abortWorkItem(WorkItem workItem,
                               WorkItemManager manager) {
-        consumers.get(workItem.getId()).cancel(true);
+        AtomicBoolean started = consumers.get(workItem.getId());
+        Optional.ofNullable(started)
+                .ifPresent(c -> c.set(true));
         consumers.remove(workItem.getId());
-        manager.abortWorkItem(workItem.getId());
+        Optional.ofNullable(manager).ifPresent(m -> m.abortWorkItem(workItem.getId()));
+        System.out.println("stop consumer.....");
     }
 
     /**
@@ -129,6 +132,16 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         try {
             int noMessageFound = 0;
             AtomicBoolean stop = new AtomicBoolean(false);
+            consumers.put(workItem.getId(), stop);
+
+//            getRuntimeEngine(workItem, getRuntimeManager(workItem)).getKieSession().addEventListener(new DefaultProcessEventListener() {
+//                @Override
+//                public void beforeProcessCompleted(ProcessCompletedEvent event) {
+//                    abortWorkItem(workItem, null);
+//                    super.beforeProcessCompleted(event);
+//                }
+//            });
+
             while (!stop.get()) {
                 System.out.println("========== Kafka Consumer Loop ============");
 
@@ -165,6 +178,7 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
                 consumer.commitSync();
             }
             consumer.close();
+            consumers.remove(workItem.getId());
             System.out.println("========== END kafka consumer EventWorkItemHandler ============");
         } catch (Exception e) {
             consumer.commitSync();
@@ -174,18 +188,28 @@ public class EventWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
         }
     }
 
+    private RuntimeManager getRuntimeManager(WorkItem workItem) {
+        String deploymentId = ((WorkItemImpl) workItem).getDeploymentId();
+        return RuntimeManagerRegistry.get().getManager(deploymentId);
+    }
+
+    private RuntimeEngine getRuntimeEngine(WorkItem workItem, RuntimeManager manager) {
+        Long processInstanceId = workItem.getProcessInstanceId();
+        if (manager != null) {
+            return manager.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId));
+        }
+        return null;
+    }
+
     private void completeWorkItemAsync(WorkItem workItem, Event event) {
         Map<String, Object> results = new HashMap<>();
         results.put("Result", event);
-        String deploymentId = ((WorkItemImpl) workItem).getDeploymentId();
-        Long processInstanceId = workItem.getProcessInstanceId();
-        Long workItemId = workItem.getId();
-        RuntimeManager manager = RuntimeManagerRegistry.get().getManager(deploymentId);
 
+        RuntimeManager manager = getRuntimeManager(workItem);
+        RuntimeEngine engine = getRuntimeEngine(workItem, manager);
         //complete the work item with the received event
-        if (manager != null) {
-            RuntimeEngine engine = manager.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId));
-            engine.getKieSession().getWorkItemManager().completeWorkItem(workItemId, results);
+        if (engine != null) {
+            engine.getKieSession().getWorkItemManager().completeWorkItem(workItem.getId(), results);
             manager.disposeRuntimeEngine(engine);
         }
     }
