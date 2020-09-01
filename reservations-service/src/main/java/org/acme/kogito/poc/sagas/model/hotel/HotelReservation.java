@@ -1,18 +1,17 @@
 package org.acme.kogito.poc.sagas.model.hotel;
 
 import java.time.ZonedDateTime;
-
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.acme.kogito.poc.sagas.model.Person;
 import org.acme.kogito.poc.sagas.model.Reservation;
 
+@RegisterForReflection
 public class HotelReservation implements Reservation {
 
-    @JsonProperty(index = 0)
-    @NotNull
-    private String id;
+    public static final String RESOURCE_NAME = "hotels";
+
     @NotNull
     private Person guest;
     @NotNull
@@ -23,16 +22,6 @@ public class HotelReservation implements Reservation {
     private ZonedDateTime end;
     @NotNull
     private RoomType type;
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public Person getGuest() {
         return guest;

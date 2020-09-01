@@ -2,30 +2,20 @@ package org.acme.kogito.poc.sagas.model.payment;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.acme.kogito.poc.sagas.model.Reservation;
 
+@RegisterForReflection
 public class PaymentRequest implements Reservation {
 
-    @JsonProperty(index = 0)
-    @NotNull
-    private String id;
+    public static final String RESOURCE_NAME = "payments";
+
     @NotNull
     private String token;
     @NotNull
     private Float amount;
     @NotNull
     private String currency;
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getToken() {
         return token;

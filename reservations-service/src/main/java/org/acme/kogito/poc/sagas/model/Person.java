@@ -2,6 +2,9 @@ package org.acme.kogito.poc.sagas.model;
 
 import javax.validation.constraints.NotNull;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public class Person {
 
     @NotNull
