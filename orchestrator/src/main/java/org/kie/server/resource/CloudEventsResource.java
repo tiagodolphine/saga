@@ -1,56 +1,59 @@
 package org.kie.server.resource;
 
+import java.io.IOException;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.builder.CloudEventBuilder;
 import io.swagger.annotations.Api;
 import org.jbpm.services.api.ProcessService;
 import org.jbpm.services.api.RuntimeDataService;
 import org.kie.api.runtime.query.QueryContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Api(value="Cloud Events")
+@Api(value = "Cloud Events")
 @ApplicationScoped
-@Path("/tiago")
+@Path("/")
 public class CloudEventsResource {
 
-    @Autowired
-    private ProcessService processService;
-
-    @Autowired
-    private RuntimeDataService dataService;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(CloudEventsResource.class);
 
     public void trigger() {
 
     }
 
     @GET
-    @Path("/")
-    public String get(){
-        QueryContext queryContext = new QueryContext(0, 10);
-        System.out.println(dataService.getProcesses(queryContext).stream().map(Object::toString).collect(Collectors.joining(",")));
-
-        return "opaaaa";
+    public String get() {
+        return "Hello !!!";
     }
 
-//    @PUT
-//    @Path("/events")
-//    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-//    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-//    public Response completeWorkItem(@javax.ws.rs.core.Context HttpHeaders headers,
-//                                     @ApiParam(value = "container id that process instance belongs to", required = true, example = "evaluation_1.0.0-SNAPSHOT") @PathParam(CONTAINER_ID) String containerId,
-//                                     @ApiParam(value = "identifier of the process instance that work item belongs to", required = true, example = "123") @PathParam(PROCESS_INST_ID) Long processInstanceId,
-//                                     @ApiParam(value = "identifier of the work item to complete", required = true, example = "567") @PathParam("workItemId") Long workItemId,
-//                                     @ApiParam(value = "optional outcome data give as map", required = false, examples = @Example(value = {
-//                                             @ExampleProperty(mediaType = JSON, value = VAR_MAP_JSON),
-//                                             @ExampleProperty(mediaType = XML, value = VAR_MAP_XML)})) String resultPayload) {
-//
-//        String type = MediaType.APPLICATION_JSON;
-//        processServiceBase.completeWorkItem(containerId, processInstanceId, workItemId, resultPayload, type);
-//        return Response.ok().build();
-//    }
+    @POST
+    @Path("")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response create(CloudEvent event) {
+        Boolean success;
+        try {
+            //process event
+
+            LOGGER.info("Received cloud event {}", event);
+        } catch (Exception e) {
+            LOGGER.error("Unable to process cloud event : {} ", event, e);
+            throw new javax.ws.rs.BadRequestException();
+        }
+        return Response.ok().build();
+    }
 }

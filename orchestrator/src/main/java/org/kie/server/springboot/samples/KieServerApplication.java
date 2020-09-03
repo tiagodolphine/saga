@@ -20,7 +20,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
-@SpringBootApplication(scanBasePackages = "org.kie.server")
+@SpringBootApplication(scanBasePackages = {"org.kie.server","io.cloudevents.http.restful.ws"})
 public class KieServerApplication {
         
     public static void main(String[] args) {
