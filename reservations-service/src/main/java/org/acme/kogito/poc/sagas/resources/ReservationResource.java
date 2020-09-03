@@ -38,9 +38,9 @@ import org.slf4j.LoggerFactory;
 @Path("/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class CloudEventResource {
+public class ReservationResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CloudEventResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReservationResource.class);
 
     @Context
     UriInfo uriInfo;
@@ -66,12 +66,12 @@ public class CloudEventResource {
     @GET
     @Path("/{resource}/reservations")
     @Produces(MediaType.APPLICATION_JSON)
-    public CompletionStage<Collection<Reservation>> list(@PathParam("resource") String resource) {
-        return CompletableFuture.supplyAsync(() -> services.get(resource).list());
+    public CompletionStage<Map<String, Reservation>> getAll(@PathParam("resource") String resource) {
+        return CompletableFuture.supplyAsync(() -> services.get(resource).getAll());
     }
 
     @POST
-    public Response create(CloudEvent event) {
+    public Response receive(CloudEvent event) {
         RequestEvent req = RequestEvent.fromType(event.getType());
         ReservationService service = services.get(req.getResource());
         if (req.isCancellation()) {
@@ -92,7 +92,9 @@ public class CloudEventResource {
                 .withSubject(event.getSubject())
                 .withType(getResponseType(req.getReservationName(), success))
                 .withSource(uriInfo.getAbsolutePath())
-                .build()).build();
+                .withDataContentType(MediaType.APPLICATION_JSON)
+                .build())
+                .build();
     }
 
     @GET

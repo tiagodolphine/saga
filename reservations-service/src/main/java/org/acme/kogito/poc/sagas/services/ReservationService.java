@@ -18,8 +18,8 @@ public class ReservationService {
     private Map<String, Reservation> reservations = new HashMap<>();
     private Set<String> cancellations = new HashSet<>();
 
-    public Collection<Reservation> list() {
-        return reservations.values();
+    public Map<String, Reservation> getAll() {
+        return reservations;
     }
 
     public Reservation get(String id) {
@@ -35,15 +35,18 @@ public class ReservationService {
             LOGGER.info("Ignoring cancelled reservation: {}", id);
             return false;
         }
+        LOGGER.info("Received reservation: {}", id);
         reservations.put(id, reservation);
         return true;
     }
 
     public Boolean cancel(String id) {
         if (!cancellations.contains(id)) {
+            LOGGER.info("Cancelled reservation: {}", id);
             cancellations.add(id);
             return true;
         }
+        LOGGER.info("Ignoring already cancelled reservation: {}", id);
         return false;
     }
 
