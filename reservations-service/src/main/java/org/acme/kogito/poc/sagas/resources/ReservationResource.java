@@ -82,7 +82,7 @@ public class ReservationResource {
         try {
             Reservation resource = objectMapper.readValue(event.getData(), req.getReservation());
             success = service.add(event.getSubject(), resource);
-        } catch (IOException e) {
+        } catch (IllegalArgumentException | IOException e) {
             LOGGER.error("Unable to process reservation for " + req.getReservation(), e);
             throw new javax.ws.rs.BadRequestException();
         }
