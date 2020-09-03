@@ -12,9 +12,41 @@
   <properties>
     <start-class>org.kie.server.springboot.samples.KieServerApplication</start-class>
     <enforcer.skip>true</enforcer.skip>
+    <compiler-plugin.version>3.8.1</compiler-plugin.version>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
+    <cloudevents.version>2.0.0-milestone2</cloudevents.version>
   </properties>
 
   <dependencies>
+    <!-- Cloud events -->
+    <dependency>
+      <groupId>io.cloudevents</groupId>
+      <artifactId>cloudevents-api</artifactId>
+      <version>${cloudevents.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.cloudevents</groupId>
+      <artifactId>cloudevents-http-restful-ws</artifactId>
+      <version>${cloudevents.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.cloudevents</groupId>
+      <artifactId>cloudevents-json-jackson</artifactId>
+      <version>${cloudevents.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>cloud-event-workitem-integration</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
+    <!-- Kie server -->
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-server-spring-boot-starter</artifactId>
@@ -25,7 +57,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>

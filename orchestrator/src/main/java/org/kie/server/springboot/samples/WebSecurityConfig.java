@@ -19,8 +19,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
         .csrf().disable()
         .authorizeRequests()
-            .antMatchers("/rest/server*").authenticated()
-            .antMatchers("/spring*").authenticated()
+            .antMatchers("/server*").authenticated()
             .and()
         .httpBasic();
     }
