@@ -1,0 +1,46 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: flight-service
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containers:
+        - image: quay.io/ruben/reservations-service:latest
+---
+apiVersion: eventing.knative.dev/v1beta1
+kind: Trigger
+metadata:
+  annotations:
+    knative-eventing-injection: enabled
+  name: flight-reservations
+spec:
+  broker: default
+  filter:
+    attributes:
+      type: FlightReservation
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: flight-service
+---
+apiVersion: eventing.knative.dev/v1beta1
+kind: Trigger
+metadata:
+  annotations:
+    knative-eventing-injection: enabled
+  name: flight-reservations-cancel
+spec:
+  broker: default
+  filter:
+    attributes:
+      type: FlightReservationCancel
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: flight-service
