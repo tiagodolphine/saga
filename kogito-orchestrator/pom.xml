@@ -19,6 +19,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <cloudevents.version>2.0.0-milestone2</cloudevents.version>
+    <kogito.version>1.0.0-SNAPSHOT</kogito.version>
   </properties>
 
   <dependencyManagement>
@@ -26,7 +27,7 @@
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-quarkus-bom</artifactId>
-        <version>${project.version}</version>
+        <version>${kogito.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -38,10 +39,10 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>process-management-addon</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.kie.kogito</groupId>-->
+<!--      <artifactId>process-management-addon</artifactId>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>io.cloudevents</groupId>
       <artifactId>cloudevents-api</artifactId>
