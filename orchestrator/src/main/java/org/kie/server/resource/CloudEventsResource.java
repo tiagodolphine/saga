@@ -31,6 +31,8 @@ public class CloudEventsResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudEventsResource.class);
 
+
+
     public void trigger() {
 
     }
@@ -48,6 +50,9 @@ public class CloudEventsResource {
         Boolean success;
         try {
             //process event
+
+
+
 
             LOGGER.info("Received cloud event {}", event);
         } catch (Exception e) {
