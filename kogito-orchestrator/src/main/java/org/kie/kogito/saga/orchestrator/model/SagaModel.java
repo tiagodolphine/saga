@@ -39,46 +39,52 @@ public class SagaModel implements Model {
         return id;
     }
 
-    public void setId(String id) {
+    public SagaModel setId(String id) {
         this.id = id;
+        return this;
     }
 
     public JsonObject getPayload() {
         return payload;
     }
 
-    public void setPayload(byte[] payload) {
+    public SagaModel setPayload(byte[] payload) {
         if (payload != null) {
             this.payload = new JsonObject(new String(payload));
         }
+        return this;
     }
 
-    public void setPayload(JsonObject payload) {
+    public SagaModel setPayload(JsonObject payload) {
         this.payload = payload;
+        return this;
     }
 
     public String getProcessInstanceId() {
         return processInstanceId;
     }
 
-    public void setProcessInstanceId(String processInstanceId) {
+    public SagaModel setProcessInstanceId(String processInstanceId) {
         this.processInstanceId = processInstanceId;
+        return this;
     }
 
     public String getSagaId() {
         return sagaId;
     }
 
-    public void setSagaId(String sagaId) {
+    public SagaModel setSagaId(String sagaId) {
         this.sagaId = sagaId;
+        return this;
     }
 
     public String getEvent() {
         return event;
     }
 
-    public void setEvent(String event) {
+    public SagaModel setEvent(String event) {
         this.event = event;
+        return this;
     }
 
     @Override
@@ -87,7 +93,7 @@ public class SagaModel implements Model {
             this.id = (String) params.get(ID);
         }
         if (params.containsKey(PAYLOAD)) {
-            this.payload = new JsonObject((String) params.get(PAYLOAD));
+            this.payload = (JsonObject) params.get(PAYLOAD);
         }
         if (params.containsKey(EVENT)) {
             this.event = (String) params.get(EVENT);
@@ -107,7 +113,7 @@ public class SagaModel implements Model {
 
     public void fromMap(String id, Map<String, Object> params) {
         this.id = id;
-        this.payload = new JsonObject((String) params.get(PAYLOAD));
+        this.payload = (JsonObject) params.get(PAYLOAD);
         this.event = (String) params.get(EVENT);
         this.sagaId = (String) params.get(SAGA_ID);
         this.processInstanceId = (String) params.get(PROCESS_INSTANCE_ID);
@@ -117,7 +123,7 @@ public class SagaModel implements Model {
     public Map<String, Object> toMap() {
         Map<String, Object> params = new HashMap<>();
         params.put(ID, id);
-        params.put(PAYLOAD, payload.encode());
+        params.put(PAYLOAD, payload);
         params.put(PROCESS_INSTANCE_ID, this.processInstanceId);
         params.put(SAGA_ID, this.sagaId);
         params.put(EVENT, this.event);

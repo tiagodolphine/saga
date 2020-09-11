@@ -45,23 +45,20 @@ public class CloudEventsResource {
     CorrelationService correlationService;
 
     @Inject
-    Processes processes;
-
-    @Inject
     @Named("tripReservation")
     Process<SagaModel> process;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response receive(CloudEvent event) {
         String eventType = event.getType();
         switch (eventType) {
             case "TripReservationRequest":
-                SagaModel model = new SagaModel();
-                model.setId(event.getId());
-                model.setPayload(event.getData());
-                ProcessInstance<? extends Model> instance = process.createInstance(null);
+                SagaModel model = new SagaModel()
+                        .setId(event.getId())
+                        .setPayload(event.getData())
+                        .setSagaId(event.getSubject());
+                ProcessInstance<? extends Model> instance = process.createInstance(model);
                 instance.start();
                 LOGGER.info("Started new {} instance.", TRIP_RESERVATION_PROCESS);
                 break;
@@ -77,9 +74,7 @@ public class CloudEventsResource {
             if (processInstanceId == null) {
                 LOGGER.warn("Ignoring unexpected event of type {}. No matching active instance.", event.getType());
             }
-            Optional<? extends ProcessInstance<? extends Model>> processInstance = processes.processById(TRIP_RESERVATION_PROCESS)
-                    .instances()
-                    .findById(processInstanceId);
+            Optional<? extends ProcessInstance<? extends Model>> processInstance = process.instances().findById(processInstanceId);
             if (processInstance.isPresent()) {
                 LOGGER.info("Received event of type {}.", event.getType());
                 processInstance.get().send(Sig.of("Message-" + event.getType(), null, processInstanceId));

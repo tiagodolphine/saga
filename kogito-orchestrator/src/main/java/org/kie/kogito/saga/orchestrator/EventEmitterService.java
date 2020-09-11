@@ -19,6 +19,8 @@ import java.net.URI;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
@@ -48,11 +50,14 @@ public class EventEmitterService {
                 .withSource(SOURCE)
                 .withSubject(correlation)
                 .withData(message.getBytes())
+                .withDataContentType(MediaType.APPLICATION_JSON)
                 .build();
-        eventsClient.emit(event);
-        correlationService.add(processInstanceId, new CorrelationKey()
-                .setEventType(eventType)
-                .setProcessInstanceId(processInstanceId));
+        Response response = eventsClient.emit(event);
+        if(response.getStatus() < Response.Status.BAD_REQUEST.getStatusCode()) {
+            correlationService.add(correlation, new CorrelationKey()
+                    .setEventType(eventType)
+                    .setProcessInstanceId(processInstanceId));
+        }
     }
 
     public void sendResponse(String eventType, String sagaId, String processInstanceId) {
@@ -61,9 +66,12 @@ public class EventEmitterService {
                 .withType(eventType)
                 .withSource(SOURCE)
                 .withSubject(sagaId)
+                .withDataContentType(MediaType.APPLICATION_JSON)
                 .build();
-        eventsClient.emit(event);
-        correlationService.deleteByProcessInstanceId(processInstanceId);
+        Response response = eventsClient.emit(event);
+        if(response.getStatus() < Response.Status.BAD_REQUEST.getStatusCode()) {
+            correlationService.deleteByProcessInstanceId(processInstanceId);
+        }
     }
 
     public void sendCompensation(String eventType, String processInstanceId) {
@@ -74,6 +82,7 @@ public class EventEmitterService {
                     .withType(eventType)
                     .withSource(SOURCE)
                     .withSubject(eventId)
+                    .withDataContentType(MediaType.APPLICATION_JSON)
                     .build();
             eventsClient.emit(event);
         }

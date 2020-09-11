@@ -52,10 +52,7 @@ public class CorrelationService {
     }
 
     public void deleteByProcessInstanceId(String processInstanceId) {
-        emitted.entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().getProcessInstanceId().equals(processInstanceId))
-                .forEach(entry -> emitted.remove(entry.getKey()));
+        emitted.entrySet().removeIf(entry -> entry.getValue().getProcessInstanceId().equals(processInstanceId));
     }
 
     public String getId(CorrelationKey correlationKey) {

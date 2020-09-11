@@ -93,6 +93,7 @@ public class TripReservationProcess extends AbstractProcess<SagaModel> {
         factory.dynamic(false);
         factory.version("1.0");
         factory.visibility("Public");
+        factory.dynamic(true);
         factory.metaData("Compensation", true);
         factory.metaData("TargetNamespace", "http://www.omg.org/bpmn20");
         org.jbpm.ruleflow.core.factory.EndNodeFactory endNode1 = factory.endNode(1);
@@ -314,7 +315,7 @@ public class TripReservationProcess extends AbstractProcess<SagaModel> {
         actionNode16.done();
         org.jbpm.ruleflow.core.factory.EndNodeFactory endNode17 = factory.endNode(17);
         endNode17.name("End");
-        endNode17.terminate(false);
+        endNode17.terminate(true);
         endNode17.metaData("UniqueId", "_EE2D648F-9F13-45A3-960C-06996345712C");
         endNode17.metaData("x", 1711);
         endNode17.metaData("width", 56);
@@ -344,7 +345,7 @@ public class TripReservationProcess extends AbstractProcess<SagaModel> {
         workItemNode18.metaData("height", 102);
         org.jbpm.ruleflow.core.factory.EndNodeFactory endNode19 = factory.endNode(19);
         endNode19.name("End");
-        endNode19.terminate(false);
+        endNode19.terminate(true);
         endNode19.metaData("UniqueId", "_C3631638-BB67-4CEF-9E39-A22B7665C83F");
         endNode19.metaData("x", 2066);
         endNode19.metaData("width", 56);
@@ -536,7 +537,7 @@ public class TripReservationProcess extends AbstractProcess<SagaModel> {
         workItemNode31.name("Request Flight Reservation");
         workItemNode31.workName("org.kie.kogito.saga.orchestrator.EventEmitterService_sendRequest_31_Handler");
         workItemNode31.workParameter("eventType", "FlightReservationRequest");
-        workItemNode31.workParameter("processInstanceId", "processInstanceId");
+        workItemNode31.inMapping("processInstanceId", "processInstanceId");
         workItemNode31.workParameter("Interface", "org.kie.kogito.saga.orchestrator.EventEmitterService");
         workItemNode31.workParameter("Operation", "sendRequest");
         workItemNode31.workParameter("interfaceImplementationRef", "org.kie.kogito.saga.orchestrator.EventEmitterService");
