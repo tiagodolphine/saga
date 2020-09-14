@@ -6,11 +6,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.kie.kogito.examples</groupId>
-  <artifactId>kogito-orchestrator</artifactId>
+  <artifactId>saga-orchestrator</artifactId>
   <version>1.0.0-SNAPSHOT</version>
 
   <name>Saga :: Kogito Orchestrator</name>
-  <description>Order management service</description>
+  <description>Saga Kogito Orchestrator</description>
 
   <properties>
     <maven.compiler.parameters>true</maven.compiler.parameters>
@@ -20,6 +20,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <cloudevents.version>2.0.0-milestone2</cloudevents.version>
     <kogito.version>1.0.0-SNAPSHOT</kogito.version>
+    <quarkus.version>1.8.0.Final</quarkus.version>
   </properties>
 
   <dependencyManagement>
@@ -102,6 +103,7 @@
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
+        <version>${quarkus.version}</version>
         <executions>
           <execution>
             <goals>
@@ -121,6 +123,7 @@
           <plugin>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-maven-plugin</artifactId>
+            <version>${quarkus.version}</version>
             <executions>
               <execution>
                 <goals>

@@ -1,0 +1,26 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: saga-orchestrator
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containers:
+        - image: quay.io/ruben/saga-orchestrator:latest
+---
+apiVersion: eventing.knative.dev/v1beta1
+kind: Trigger
+metadata:
+  annotations:
+    knative-eventing-injection: enabled
+  name: saga-orchestrator
+spec:
+  broker: default
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: saga-orchestrator
