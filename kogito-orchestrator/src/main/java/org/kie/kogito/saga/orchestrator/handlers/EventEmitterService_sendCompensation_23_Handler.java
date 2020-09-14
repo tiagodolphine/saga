@@ -7,7 +7,7 @@ public class EventEmitterService_sendCompensation_23_Handler implements org.kie.
     org.kie.kogito.saga.orchestrator.EventEmitterService service;
 
     public void executeWorkItem(org.kie.api.runtime.process.WorkItem workItem, org.kie.api.runtime.process.WorkItemManager workItemManager) {
-        service.sendCompensation((String) workItem.getParameter("eventType"), (String) workItem.getParameter("processInstanceId"));
+        service.sendCompensation((String) workItem.getParameter("compensateForType"), (String) workItem.getParameter("eventType"), (String) workItem.getParameter("processInstanceId"));
         workItemManager.completeWorkItem(workItem.getId(), null);
     }
 

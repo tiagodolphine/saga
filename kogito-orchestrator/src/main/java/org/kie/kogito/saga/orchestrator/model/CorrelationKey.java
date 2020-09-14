@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.saga.orchestrator.model;
 
+import java.util.Objects;
+
 public class CorrelationKey {
 
     private String processInstanceId;
@@ -36,5 +38,19 @@ public class CorrelationKey {
     public CorrelationKey setEventType(String eventType) {
         this.eventType = eventType;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CorrelationKey)) return false;
+        CorrelationKey that = (CorrelationKey) o;
+        return Objects.equals(processInstanceId, that.processInstanceId) &&
+                Objects.equals(eventType, that.eventType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(processInstanceId, eventType);
     }
 }

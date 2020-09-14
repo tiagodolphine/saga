@@ -74,8 +74,8 @@ public class EventEmitterService {
         }
     }
 
-    public void sendCompensation(String eventType, String processInstanceId) {
-        String eventId = correlationService.getId(new CorrelationKey().setEventType(eventType).setProcessInstanceId(processInstanceId));
+    public void sendCompensation(String compensateForType, String eventType, String processInstanceId) {
+        String eventId = correlationService.getId(new CorrelationKey().setEventType(compensateForType).setProcessInstanceId(processInstanceId));
         if (eventId != null) {
             CloudEvent event = CloudEventBuilder.v1()
                     .withId(UUID.randomUUID().toString())
