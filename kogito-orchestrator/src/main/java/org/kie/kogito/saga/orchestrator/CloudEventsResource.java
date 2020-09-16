@@ -85,14 +85,14 @@ public class CloudEventsResource {
 
     private void processIntermediateEvent(CloudEvent event, Process<? extends Model> process) {
         if (correlationService.contains(event.getSubject())) {
-            String processInstanceId = correlationService.getProcessInstanceId(event.getSubject());
+            final String processInstanceId = correlationService.getProcessInstanceId(event.getSubject());
             if (processInstanceId == null) {
                 LOGGER.warn("Ignoring unexpected event of type {}. No matching active instance.", event.getType());
             }
             Optional<? extends ProcessInstance<? extends Model>> processInstance = process.instances().findById(processInstanceId);
             if (processInstance.isPresent()) {
                 LOGGER.info("Received event of type {}.", event.getType());
-                processInstance.get().send(Sig.of("Message-" + event.getType(), null, processInstanceId));
+                processInstance.get().send(Sig.of("Message-" + event.getType(), "event payload", null));
             } else {
                 LOGGER.warn("Ignoring event of type {} with no matching process instance.", event.getType());
             }

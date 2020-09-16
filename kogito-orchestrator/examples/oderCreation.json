@@ -24,6 +24,9 @@
     "start": "2020-08-25T20:00:00+02:00",
     "end": "2020-08-27T13:00:00+02:00"
   },
+  "cancelStock": {
+    "orderId": "123"
+  },
   "scheduleShipping": {
     "passenger": {
       "firstName": "Ruben",
@@ -47,10 +50,13 @@
       }
     ]
   },
-  "PaymentRequest": {
-    "id": "PAY-00001",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
-    "amount": 2640.40,
-    "currency": "EUR"
+  "createPayment": {
+    "id": "PAY-00001"
+  },
+  "orderCreateSuccess": {
+    "orderId": "123"
+  },
+  "orderCreateFail": {
+    "orderId": "123"
   }
 }

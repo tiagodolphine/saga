@@ -31,9 +31,13 @@ import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.kie.kogito.saga.orchestrator.model.CorrelationKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class EventEmitterService {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(EventEmitterService.class);
 
     @Inject
     @RestClient
@@ -46,6 +50,7 @@ public class EventEmitterService {
     ObjectMapper objectMapper;
 
     public void sendRequest(String processInstanceId, String eventType, String payload) {
+        LOGGER.info("send sendRequest {} {}", eventType, processInstanceId);
         String message = getMessage(payload, eventType);
         String correlation = UUID.randomUUID().toString();
         //FIXME: get the saga id
@@ -81,6 +86,7 @@ public class EventEmitterService {
     }
 
     public void sendCompensation(String compensateForType, String eventType, String processInstanceId) {
+        LOGGER.info("send compensation {} {} {}", compensateForType, eventType, processInstanceId);
         String eventId = correlationService.getId(new CorrelationKey().setEventType(compensateForType).setProcessInstanceId(processInstanceId));
         //FIXME
         String sagaId = processInstanceId;
