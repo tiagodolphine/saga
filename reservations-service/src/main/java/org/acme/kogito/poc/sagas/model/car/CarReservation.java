@@ -8,7 +8,7 @@ import org.acme.kogito.poc.sagas.model.Person;
 import org.acme.kogito.poc.sagas.model.Reservation;
 
 @RegisterForReflection
-public class CarReservation implements Reservation {
+public class CarReservation extends Reservation {
 
     public static final String RESOURCE_NAME = "cars";
 
@@ -81,4 +81,5 @@ public class CarReservation implements Reservation {
     public void setReturnOffice(String returnOffice) {
         this.returnOffice = returnOffice;
     }
+
 }

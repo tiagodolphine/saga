@@ -1,6 +1,8 @@
 package org.acme.kogito.poc.sagas.resources;
 
 import java.io.IOException;
+import java.net.URI;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -24,13 +27,16 @@ import javax.ws.rs.core.UriInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.groups.UniOnItem;
 import org.acme.kogito.poc.sagas.model.RequestEvent;
 import org.acme.kogito.poc.sagas.model.Reservation;
 import org.acme.kogito.poc.sagas.model.car.CarReservation;
 import org.acme.kogito.poc.sagas.model.flight.FlightReservation;
 import org.acme.kogito.poc.sagas.model.hotel.HotelReservation;
-import org.acme.kogito.poc.sagas.model.payment.PaymentRequest;
+import org.acme.kogito.poc.sagas.model.payment.Payment;
 import org.acme.kogito.poc.sagas.services.ReservationService;
+import org.acme.kogito.poc.sagas.services.TrollService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,22 +51,20 @@ public class ReservationResource {
     @Context
     UriInfo uriInfo;
 
-    ReservationService carReservationService = new ReservationService();
-    ReservationService flightReservationService = new ReservationService();
-    ReservationService hotelReservationService = new ReservationService();
-    ReservationService paymentRequestService = new ReservationService();
-
     private Map<String, ReservationService> services = new HashMap<>();
 
     @Inject
     ObjectMapper objectMapper;
 
+    @Inject
+    TrollService trollService;
+
     @PostConstruct
     void init() {
-        services.put(CarReservation.RESOURCE_NAME, carReservationService);
-        services.put(FlightReservation.RESOURCE_NAME, flightReservationService);
-        services.put(HotelReservation.RESOURCE_NAME, hotelReservationService);
-        services.put(PaymentRequest.RESOURCE_NAME, paymentRequestService);
+        services.put(CarReservation.RESOURCE_NAME, new ReservationService());
+        services.put(FlightReservation.RESOURCE_NAME, new ReservationService());
+        services.put(HotelReservation.RESOURCE_NAME, new ReservationService());
+        services.put(Payment.RESOURCE_NAME, new ReservationService());
     }
 
     @GET
@@ -72,29 +76,48 @@ public class ReservationResource {
 
     @POST
     public Response receive(CloudEvent event) {
-        RequestEvent req = RequestEvent.fromType(event.getType());
+        final URI absolutePath = uriInfo.getAbsolutePath();
+        final RequestEvent req = RequestEvent.fromType(event.getType());
         ReservationService service = services.get(req.getResource());
         if (req.isCancellation()) {
             service.cancel(event.getSubject());
             return Response.ok().build();
         }
-        Boolean success;
+        Uni<CloudEvent> uni = Uni.createFrom().item(event);
         try {
             Reservation resource = objectMapper.readValue(event.getData(), req.getReservation());
-            success = service.add(event.getSubject(), resource);
-        } catch (IllegalArgumentException | IOException e) {
+            Duration delay = trollService.withDelay(resource.getDelay());
+            if(delay != null) {
+                uni = uni.onItem().delayIt().by(delay);
+            }
+            Boolean success = uni.map(ev -> {
+                try {
+
+                    Boolean added = service.add(event.getSubject(), resource);
+                    if (trollService.shouldFail(resource.shouldFail())) {
+                        throw new OnPurposeException("Should fail");
+                    }
+                    return added;
+                } catch (IllegalArgumentException e) {
+                    LOGGER.error("Unable to process reservation for " + req.getReservation(), e);
+                    throw new javax.ws.rs.BadRequestException();
+                } catch (OnPurposeException e) {
+                    LOGGER.error("Failed on purpose " + req.getReservation(), e);
+                    throw new InternalServerErrorException(e);
+                }
+            }).await().indefinitely();
+            return Response.ok(CloudEventBuilder.v1()
+                    .withId(UUID.randomUUID().toString())
+                    .withSubject(event.getSubject())
+                    .withType(getResponseType(req.getReservationName(), success))
+                    .withSource(absolutePath)
+                    .withDataContentType(MediaType.APPLICATION_JSON)
+                    .build())
+                    .build();
+        } catch (IOException e) {
             LOGGER.error("Unable to process reservation for " + req.getReservation(), e);
             throw new javax.ws.rs.BadRequestException();
         }
-
-        return Response.ok(CloudEventBuilder.v1()
-                .withId(UUID.randomUUID().toString())
-                .withSubject(event.getSubject())
-                .withType(getResponseType(req.getReservationName(), success))
-                .withSource(uriInfo.getAbsolutePath())
-                .withDataContentType(MediaType.APPLICATION_JSON)
-                .build())
-                .build();
     }
 
     @GET
