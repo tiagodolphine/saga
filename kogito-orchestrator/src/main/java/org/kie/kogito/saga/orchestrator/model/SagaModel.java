@@ -18,7 +18,6 @@ package org.kie.kogito.saga.orchestrator.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.vertx.core.json.JsonObject;
 import org.kie.kogito.Model;
 
 public class SagaModel implements Model {

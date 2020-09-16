@@ -1,19 +1,19 @@
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_7hyDUNirEDimcKy8-2f6-A" exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_-4ejINo8EDiSvcfPZJpCzA" exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_sagaIdItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_payloadItem" structureRef="io.vertx.core.json.JsonObject"/>
+  <bpmn2:itemDefinition id="_payloadItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_processInstanceIdItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_eventItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_eventTypeInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_payloadInputXItem" structureRef="io.vertx.core.json.JsonObject"/>
+  <bpmn2:itemDefinition id="__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_payloadInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_processInstanceIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__42814385-DE17-4BBF-BDDF-53B473DF6C95_eventTypeInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__42814385-DE17-4BBF-BDDF-53B473DF6C95_payloadInputXItem" structureRef="io.vertx.core.json.JsonObject"/>
+  <bpmn2:itemDefinition id="__42814385-DE17-4BBF-BDDF-53B473DF6C95_payloadInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__42814385-DE17-4BBF-BDDF-53B473DF6C95_processInstanceIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__8C6C58EF-9892-440F-AFB5-94225F3D9100_eventTypeInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__8C6C58EF-9892-440F-AFB5-94225F3D9100_payloadInputXItem" structureRef="io.vertx.core.json.JsonObject"/>
+  <bpmn2:itemDefinition id="__8C6C58EF-9892-440F-AFB5-94225F3D9100_payloadInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__8C6C58EF-9892-440F-AFB5-94225F3D9100_processInstanceIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__10C26516-AFBD-44B1-8987-82518BD86689_eventTypeInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__10C26516-AFBD-44B1-8987-82518BD86689_payloadInputXItem" structureRef="io.vertx.core.json.JsonObject"/>
+  <bpmn2:itemDefinition id="__10C26516-AFBD-44B1-8987-82518BD86689_payloadInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__10C26516-AFBD-44B1-8987-82518BD86689_processInstanceIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__4EE2789A-F3F9-4246-9028-073DF71AB390_eventTypeInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__4EE2789A-F3F9-4246-9028-073DF71AB390_processInstanceIdInputXItem" structureRef="String"/>
@@ -83,15 +83,15 @@
   <bpmn2:interface id="_E371CB0D-9233-4C1A-B877-5D8ADE2059A4_ServiceInterface" name="org.kie.kogito.saga.orchestrator.EventEmitterService" implementationRef="org.kie.kogito.saga.orchestrator.EventEmitterService">
     <bpmn2:operation id="_E371CB0D-9233-4C1A-B877-5D8ADE2059A4_ServiceOperation" name="sendResponse" implementationRef="sendResponse"/>
   </bpmn2:interface>
-  <bpmn2:message id="_7h2UwNirEDimcKy8-2f6-A" itemRef="HotelReservationFailedType" name="HotelReservationFailed"/>
-  <bpmn2:message id="_7h2UwdirEDimcKy8-2f6-A" itemRef="HotelReservationSuccessType" name="HotelReservationSuccess"/>
-  <bpmn2:message id="_7h2UwtirEDimcKy8-2f6-A" itemRef="CarReservationSuccessType" name="CarReservationSuccess"/>
-  <bpmn2:message id="_7h270NirEDimcKy8-2f6-A" itemRef="CarReservationFailedType" name="CarReservationFailed"/>
-  <bpmn2:message id="_7h270dirEDimcKy8-2f6-A" itemRef="FlightReservationSuccessType" name="FlightReservationSuccess"/>
-  <bpmn2:message id="_7h270tirEDimcKy8-2f6-A" itemRef="FlightReservationFailedType" name="FlightReservationFailed"/>
-  <bpmn2:message id="_7h2709irEDimcKy8-2f6-A" itemRef="PaymentRequestSuccessType" name="PaymentRequestSuccess"/>
+  <bpmn2:message id="_-4lQ0No8EDiSvcfPZJpCzA" itemRef="HotelReservationFailedType" name="HotelReservationFailed"/>
+  <bpmn2:message id="_-4l34No8EDiSvcfPZJpCzA" itemRef="HotelReservationSuccessType" name="HotelReservationSuccess"/>
+  <bpmn2:message id="_-4l34do8EDiSvcfPZJpCzA" itemRef="CarReservationSuccessType" name="CarReservationSuccess"/>
+  <bpmn2:message id="_-4l34to8EDiSvcfPZJpCzA" itemRef="CarReservationFailedType" name="CarReservationFailed"/>
+  <bpmn2:message id="_-4l349o8EDiSvcfPZJpCzA" itemRef="FlightReservationSuccessType" name="FlightReservationSuccess"/>
+  <bpmn2:message id="_-4l35No8EDiSvcfPZJpCzA" itemRef="FlightReservationFailedType" name="FlightReservationFailed"/>
+  <bpmn2:message id="_-4me8No8EDiSvcfPZJpCzA" itemRef="PaymentRequestSuccessType" name="PaymentRequestSuccess"/>
   <bpmn2:signal id="_1260131671" name="Compensate"/>
-  <bpmn2:message id="_7h271NirEDimcKy8-2f6-A" itemRef="PaymentRequestFailedType" name="PaymentRequestFailed"/>
+  <bpmn2:message id="_-4me8do8EDiSvcfPZJpCzA" itemRef="PaymentRequestFailedType" name="PaymentRequestFailed"/>
   <bpmn2:signal id="_1260131671" name="Compensate"/>
   <bpmn2:process id="tripReservation" drools:packageName="org.kie.kogito.saga" drools:version="1.0" drools:adHoc="true" name="Trip Reservation Process" isExecutable="true" processType="Public">
     <bpmn2:property id="sagaId" itemSubjectRef="_sagaIdItem" name="sagaId"/>
@@ -125,15 +125,15 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_AE54ED87-A936-4EAD-BF05-7BFAF2815A48" sourceRef="_83F7FEAD-5758-4B12-A0BA-23B80243093A" targetRef="_69548561-C161-47DF-A995-37DA0BEDF9A2"/>
     <bpmn2:sequenceFlow id="_17477EAF-5EEB-4123-82FD-604D23B66506" sourceRef="_83F7FEAD-5758-4B12-A0BA-23B80243093A" targetRef="_316A5460-9FDB-4CC0-95CD-BF98698E5A7F"/>
-    <bpmn2:sequenceFlow id="_5E698F32-022D-4C79-BB42-91EB0724123F" sourceRef="_668B9171-1EC5-4752-9F3E-C9D68D94AFDB" targetRef="_45B580D2-4C0B-481D-B6E1-468A1A76DCF4"/>
+    <bpmn2:sequenceFlow id="_AE54ED87-A936-4EAD-BF05-7BFAF2815A48" sourceRef="_83F7FEAD-5758-4B12-A0BA-23B80243093A" targetRef="_69548561-C161-47DF-A995-37DA0BEDF9A2"/>
     <bpmn2:sequenceFlow id="_D128CF2A-ABD6-4765-950B-BA4EACD7F482" sourceRef="_668B9171-1EC5-4752-9F3E-C9D68D94AFDB" targetRef="_C859493A-2362-4EA1-9850-2971FAA9FBC9"/>
-    <bpmn2:sequenceFlow id="_8B9ED87E-6442-4EEA-A4AB-DB03C792BD02" sourceRef="_E1929E42-3159-490E-BC14-765DA225925B" targetRef="_69D38ACF-C785-48E2-BD19-AB5E9C3CBA8D"/>
+    <bpmn2:sequenceFlow id="_5E698F32-022D-4C79-BB42-91EB0724123F" sourceRef="_668B9171-1EC5-4752-9F3E-C9D68D94AFDB" targetRef="_45B580D2-4C0B-481D-B6E1-468A1A76DCF4"/>
     <bpmn2:sequenceFlow id="_0E127B17-521E-4500-9E54-BDBD172983D7" sourceRef="_E1929E42-3159-490E-BC14-765DA225925B" targetRef="_F0A835B5-528D-47B9-8BFD-4C13A1D7EA3F"/>
-    <bpmn2:sequenceFlow id="_EA71F36A-E04F-402E-A979-B50165329AFF" sourceRef="_6D0E46AE-3194-4DB0-8C71-BAF0FC116251" targetRef="_B6654CFD-5156-42FE-9EE0-1194EB870CA1"/>
-    <bpmn2:sequenceFlow id="_E3DCDC26-6DE2-4030-BAB6-8E4143FF0D55" sourceRef="_6D0E46AE-3194-4DB0-8C71-BAF0FC116251" targetRef="_9005F385-EECA-4910-B813-3F7F26A159AC"/>
+    <bpmn2:sequenceFlow id="_8B9ED87E-6442-4EEA-A4AB-DB03C792BD02" sourceRef="_E1929E42-3159-490E-BC14-765DA225925B" targetRef="_69D38ACF-C785-48E2-BD19-AB5E9C3CBA8D"/>
     <bpmn2:sequenceFlow id="_647B82C2-DF28-4500-B56E-22178BDC9B02" sourceRef="_6D0E46AE-3194-4DB0-8C71-BAF0FC116251" targetRef="_6476EAD6-3416-4146-AC49-3E17092F570A"/>
+    <bpmn2:sequenceFlow id="_E3DCDC26-6DE2-4030-BAB6-8E4143FF0D55" sourceRef="_6D0E46AE-3194-4DB0-8C71-BAF0FC116251" targetRef="_9005F385-EECA-4910-B813-3F7F26A159AC"/>
+    <bpmn2:sequenceFlow id="_EA71F36A-E04F-402E-A979-B50165329AFF" sourceRef="_6D0E46AE-3194-4DB0-8C71-BAF0FC116251" targetRef="_B6654CFD-5156-42FE-9EE0-1194EB870CA1"/>
     <bpmn2:sequenceFlow id="_B330E672-1DD6-4594-84B7-AA7404AFEBF6" sourceRef="_E371CB0D-9233-4C1A-B877-5D8ADE2059A4" targetRef="_EE2D648F-9F13-45A3-960C-06996345712C">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.source">
@@ -181,7 +181,7 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_0E329A34-CE45-4783-8C2F-EE0A979EB90E" sourceRef="_9005F385-EECA-4910-B813-3F7F26A159AC" targetRef="_D5B0E47C-3992-48CC-8E10-E8E8EA3D0876"/>
+    <bpmn2:sequenceFlow id="_05B98FF5-D1CF-4BFD-B2EB-166192607319" sourceRef="_45B580D2-4C0B-481D-B6E1-468A1A76DCF4" targetRef="_D5B0E47C-3992-48CC-8E10-E8E8EA3D0876"/>
     <bpmn2:sequenceFlow id="_7B59C53A-27A4-4328-8B08-1764950FCA80" sourceRef="_69D38ACF-C785-48E2-BD19-AB5E9C3CBA8D" targetRef="_D5B0E47C-3992-48CC-8E10-E8E8EA3D0876">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -189,7 +189,7 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_05B98FF5-D1CF-4BFD-B2EB-166192607319" sourceRef="_45B580D2-4C0B-481D-B6E1-468A1A76DCF4" targetRef="_D5B0E47C-3992-48CC-8E10-E8E8EA3D0876"/>
+    <bpmn2:sequenceFlow id="_0E329A34-CE45-4783-8C2F-EE0A979EB90E" sourceRef="_9005F385-EECA-4910-B813-3F7F26A159AC" targetRef="_D5B0E47C-3992-48CC-8E10-E8E8EA3D0876"/>
     <bpmn2:sequenceFlow id="_81803181-F4EF-433F-9DD4-7880A291E8B8" sourceRef="_10C26516-AFBD-44B1-8987-82518BD86689" targetRef="_668B9171-1EC5-4752-9F3E-C9D68D94AFDB">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.source">
@@ -213,9 +213,9 @@
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_EE61FC56-2793-48BF-8C43-A34F70A3054F" sourceRef="_7AC0AA3E-0F91-42A7-AED6-85662D09CA2C" targetRef="_6D0E46AE-3194-4DB0-8C71-BAF0FC116251"/>
-    <bpmn2:sequenceFlow id="_38B25510-78F4-41A4-8713-43E3C7CB7061" sourceRef="_4B04E4AC-FF80-40E0-BDBF-980A9247C70D" targetRef="_10C26516-AFBD-44B1-8987-82518BD86689"/>
-    <bpmn2:sequenceFlow id="_FFB85155-D19A-4E1F-A22F-B1BD4A85ECEC" sourceRef="_4B04E4AC-FF80-40E0-BDBF-980A9247C70D" targetRef="_42814385-DE17-4BBF-BDDF-53B473DF6C95"/>
     <bpmn2:sequenceFlow id="_5B8F0D10-DFBA-4715-AB9E-F9D7F5C091D5" sourceRef="_4B04E4AC-FF80-40E0-BDBF-980A9247C70D" targetRef="_7AC0AA3E-0F91-42A7-AED6-85662D09CA2C"/>
+    <bpmn2:sequenceFlow id="_FFB85155-D19A-4E1F-A22F-B1BD4A85ECEC" sourceRef="_4B04E4AC-FF80-40E0-BDBF-980A9247C70D" targetRef="_42814385-DE17-4BBF-BDDF-53B473DF6C95"/>
+    <bpmn2:sequenceFlow id="_38B25510-78F4-41A4-8713-43E3C7CB7061" sourceRef="_4B04E4AC-FF80-40E0-BDBF-980A9247C70D" targetRef="_10C26516-AFBD-44B1-8987-82518BD86689"/>
     <bpmn2:sequenceFlow id="_A0443888-0AA6-4929-87D8-A18262718930" sourceRef="_E9ADFB10-A6E3-406C-800F-B0868DCB2930" targetRef="_4B04E4AC-FF80-40E0-BDBF-980A9247C70D"/>
     <bpmn2:sequenceFlow id="_84CD6AFA-86ED-4133-90F1-8EAE70669FD2" sourceRef="_B74E7A62-26A1-4988-90E9-990248E750EE" targetRef="_E9ADFB10-A6E3-406C-800F-B0868DCB2930">
       <bpmn2:extensionElements>
@@ -285,7 +285,7 @@
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_316A5460-9FDB-4CC0-95CD-BF98698E5A7F_eventOutputX</bpmn2:dataOutputRefs>
       </bpmn2:outputSet>
-      <bpmn2:messageEventDefinition drools:msgref="PaymentRequestFailed" messageRef="_7h271NirEDimcKy8-2f6-A"/>
+      <bpmn2:messageEventDefinition drools:msgref="PaymentRequestFailed" messageRef="_-4me8do8EDiSvcfPZJpCzA"/>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:endEvent id="_33A0F800-5D55-4EEC-9CCF-579E2E0B5CC9" name="Compensate">
       <bpmn2:extensionElements>
@@ -327,12 +327,12 @@
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_69548561-C161-47DF-A995-37DA0BEDF9A2_eventOutputX</bpmn2:dataOutputRefs>
       </bpmn2:outputSet>
-      <bpmn2:messageEventDefinition drools:msgref="PaymentRequestSuccess" messageRef="_7h2709irEDimcKy8-2f6-A"/>
+      <bpmn2:messageEventDefinition drools:msgref="PaymentRequestSuccess" messageRef="_-4me8No8EDiSvcfPZJpCzA"/>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:eventBasedGateway id="_83F7FEAD-5758-4B12-A0BA-23B80243093A" gatewayDirection="Diverging">
       <bpmn2:incoming>_481C450D-8514-4656-9522-D6F5C9A99D67</bpmn2:incoming>
-      <bpmn2:outgoing>_17477EAF-5EEB-4123-82FD-604D23B66506</bpmn2:outgoing>
       <bpmn2:outgoing>_AE54ED87-A936-4EAD-BF05-7BFAF2815A48</bpmn2:outgoing>
+      <bpmn2:outgoing>_17477EAF-5EEB-4123-82FD-604D23B66506</bpmn2:outgoing>
     </bpmn2:eventBasedGateway>
     <bpmn2:intermediateCatchEvent id="_C859493A-2362-4EA1-9850-2971FAA9FBC9" name="FlightReservationFailed">
       <bpmn2:extensionElements>
@@ -350,7 +350,7 @@
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_C859493A-2362-4EA1-9850-2971FAA9FBC9_eventOutputX</bpmn2:dataOutputRefs>
       </bpmn2:outputSet>
-      <bpmn2:messageEventDefinition drools:msgref="FlightReservationFailed" messageRef="_7h270tirEDimcKy8-2f6-A"/>
+      <bpmn2:messageEventDefinition drools:msgref="FlightReservationFailed" messageRef="_-4l35No8EDiSvcfPZJpCzA"/>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:intermediateCatchEvent id="_45B580D2-4C0B-481D-B6E1-468A1A76DCF4" name="FlightReservationSuccess">
       <bpmn2:extensionElements>
@@ -368,12 +368,12 @@
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_45B580D2-4C0B-481D-B6E1-468A1A76DCF4_eventOutputX</bpmn2:dataOutputRefs>
       </bpmn2:outputSet>
-      <bpmn2:messageEventDefinition drools:msgref="FlightReservationSuccess" messageRef="_7h270dirEDimcKy8-2f6-A"/>
+      <bpmn2:messageEventDefinition drools:msgref="FlightReservationSuccess" messageRef="_-4l349o8EDiSvcfPZJpCzA"/>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:eventBasedGateway id="_668B9171-1EC5-4752-9F3E-C9D68D94AFDB" gatewayDirection="Diverging">
       <bpmn2:incoming>_81803181-F4EF-433F-9DD4-7880A291E8B8</bpmn2:incoming>
-      <bpmn2:outgoing>_D128CF2A-ABD6-4765-950B-BA4EACD7F482</bpmn2:outgoing>
       <bpmn2:outgoing>_5E698F32-022D-4C79-BB42-91EB0724123F</bpmn2:outgoing>
+      <bpmn2:outgoing>_D128CF2A-ABD6-4765-950B-BA4EACD7F482</bpmn2:outgoing>
     </bpmn2:eventBasedGateway>
     <bpmn2:intermediateCatchEvent id="_F0A835B5-528D-47B9-8BFD-4C13A1D7EA3F" name="CarReservationFailed">
       <bpmn2:extensionElements>
@@ -391,7 +391,7 @@
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_F0A835B5-528D-47B9-8BFD-4C13A1D7EA3F_eventOutputX</bpmn2:dataOutputRefs>
       </bpmn2:outputSet>
-      <bpmn2:messageEventDefinition drools:msgref="CarReservationFailed" messageRef="_7h270NirEDimcKy8-2f6-A"/>
+      <bpmn2:messageEventDefinition drools:msgref="CarReservationFailed" messageRef="_-4l34to8EDiSvcfPZJpCzA"/>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:intermediateCatchEvent id="_69D38ACF-C785-48E2-BD19-AB5E9C3CBA8D" name="CarReservationSuccess">
       <bpmn2:extensionElements>
@@ -409,12 +409,12 @@
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_69D38ACF-C785-48E2-BD19-AB5E9C3CBA8D_eventOutputX</bpmn2:dataOutputRefs>
       </bpmn2:outputSet>
-      <bpmn2:messageEventDefinition drools:msgref="CarReservationSuccess" messageRef="_7h2UwtirEDimcKy8-2f6-A"/>
+      <bpmn2:messageEventDefinition drools:msgref="CarReservationSuccess" messageRef="_-4l34do8EDiSvcfPZJpCzA"/>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:eventBasedGateway id="_E1929E42-3159-490E-BC14-765DA225925B" gatewayDirection="Diverging">
       <bpmn2:incoming>_42C55823-A8A7-45C0-881E-CC1D29D4E9D0</bpmn2:incoming>
-      <bpmn2:outgoing>_0E127B17-521E-4500-9E54-BDBD172983D7</bpmn2:outgoing>
       <bpmn2:outgoing>_8B9ED87E-6442-4EEA-A4AB-DB03C792BD02</bpmn2:outgoing>
+      <bpmn2:outgoing>_0E127B17-521E-4500-9E54-BDBD172983D7</bpmn2:outgoing>
     </bpmn2:eventBasedGateway>
     <bpmn2:intermediateCatchEvent id="_9005F385-EECA-4910-B813-3F7F26A159AC" name="HotelReservationSuccess">
       <bpmn2:extensionElements>
@@ -432,7 +432,7 @@
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_9005F385-EECA-4910-B813-3F7F26A159AC_eventOutputX</bpmn2:dataOutputRefs>
       </bpmn2:outputSet>
-      <bpmn2:messageEventDefinition drools:msgref="HotelReservationSuccess" messageRef="_7h2UwdirEDimcKy8-2f6-A"/>
+      <bpmn2:messageEventDefinition drools:msgref="HotelReservationSuccess" messageRef="_-4l34No8EDiSvcfPZJpCzA"/>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:intermediateCatchEvent id="_B6654CFD-5156-42FE-9EE0-1194EB870CA1" name="HotelReservationFailed">
       <bpmn2:extensionElements>
@@ -450,13 +450,13 @@
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_B6654CFD-5156-42FE-9EE0-1194EB870CA1_eventOutputX</bpmn2:dataOutputRefs>
       </bpmn2:outputSet>
-      <bpmn2:messageEventDefinition drools:msgref="HotelReservationFailed" messageRef="_7h2UwNirEDimcKy8-2f6-A"/>
+      <bpmn2:messageEventDefinition drools:msgref="HotelReservationFailed" messageRef="_-4lQ0No8EDiSvcfPZJpCzA"/>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:eventBasedGateway id="_6D0E46AE-3194-4DB0-8C71-BAF0FC116251" gatewayDirection="Diverging">
       <bpmn2:incoming>_EE61FC56-2793-48BF-8C43-A34F70A3054F</bpmn2:incoming>
-      <bpmn2:outgoing>_647B82C2-DF28-4500-B56E-22178BDC9B02</bpmn2:outgoing>
-      <bpmn2:outgoing>_E3DCDC26-6DE2-4030-BAB6-8E4143FF0D55</bpmn2:outgoing>
       <bpmn2:outgoing>_EA71F36A-E04F-402E-A979-B50165329AFF</bpmn2:outgoing>
+      <bpmn2:outgoing>_E3DCDC26-6DE2-4030-BAB6-8E4143FF0D55</bpmn2:outgoing>
+      <bpmn2:outgoing>_647B82C2-DF28-4500-B56E-22178BDC9B02</bpmn2:outgoing>
     </bpmn2:eventBasedGateway>
     <bpmn2:scriptTask id="_E9ADFB10-A6E3-406C-800F-B0868DCB2930" name="Set processInstanceId" scriptFormat="http://www.java.com/java">
       <bpmn2:extensionElements>
@@ -741,9 +741,9 @@
       <bpmn2:signalEventDefinition signalRef="_1260131671"/>
     </bpmn2:endEvent>
     <bpmn2:parallelGateway id="_D5B0E47C-3992-48CC-8E10-E8E8EA3D0876" gatewayDirection="Converging">
-      <bpmn2:incoming>_05B98FF5-D1CF-4BFD-B2EB-166192607319</bpmn2:incoming>
-      <bpmn2:incoming>_7B59C53A-27A4-4328-8B08-1764950FCA80</bpmn2:incoming>
       <bpmn2:incoming>_0E329A34-CE45-4783-8C2F-EE0A979EB90E</bpmn2:incoming>
+      <bpmn2:incoming>_7B59C53A-27A4-4328-8B08-1764950FCA80</bpmn2:incoming>
+      <bpmn2:incoming>_05B98FF5-D1CF-4BFD-B2EB-166192607319</bpmn2:incoming>
       <bpmn2:outgoing>_AC4FC77E-906A-4097-B2FF-6DAE3B2A2D81</bpmn2:outgoing>
     </bpmn2:parallelGateway>
     <bpmn2:serviceTask id="_10C26516-AFBD-44B1-8987-82518BD86689" drools:serviceimplementation="Java" drools:serviceinterface="org.kie.kogito.saga.orchestrator.EventEmitterService" drools:serviceoperation="sendRequest" name="Request Flight Reservation" implementation="Java" operationRef="_10C26516-AFBD-44B1-8987-82518BD86689_ServiceOperation">
@@ -756,7 +756,7 @@
       <bpmn2:outgoing>_81803181-F4EF-433F-9DD4-7880A291E8B8</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_10C26516-AFBD-44B1-8987-82518BD86689_eventTypeInputX" drools:dtype="String" itemSubjectRef="__10C26516-AFBD-44B1-8987-82518BD86689_eventTypeInputXItem" name="eventType"/>
-        <bpmn2:dataInput id="_10C26516-AFBD-44B1-8987-82518BD86689_payloadInputX" drools:dtype="io.vertx.core.json.JsonObject" itemSubjectRef="__10C26516-AFBD-44B1-8987-82518BD86689_payloadInputXItem" name="payload"/>
+        <bpmn2:dataInput id="_10C26516-AFBD-44B1-8987-82518BD86689_payloadInputX" drools:dtype="String" itemSubjectRef="__10C26516-AFBD-44B1-8987-82518BD86689_payloadInputXItem" name="payload"/>
         <bpmn2:dataInput id="_10C26516-AFBD-44B1-8987-82518BD86689_processInstanceIdInputX" drools:dtype="String" itemSubjectRef="__10C26516-AFBD-44B1-8987-82518BD86689_processInstanceIdInputXItem" name="processInstanceId"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_10C26516-AFBD-44B1-8987-82518BD86689_eventTypeInputX</bpmn2:dataInputRefs>
@@ -790,7 +790,7 @@
       <bpmn2:outgoing>_481C450D-8514-4656-9522-D6F5C9A99D67</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_8C6C58EF-9892-440F-AFB5-94225F3D9100_eventTypeInputX" drools:dtype="String" itemSubjectRef="__8C6C58EF-9892-440F-AFB5-94225F3D9100_eventTypeInputXItem" name="eventType"/>
-        <bpmn2:dataInput id="_8C6C58EF-9892-440F-AFB5-94225F3D9100_payloadInputX" drools:dtype="io.vertx.core.json.JsonObject" itemSubjectRef="__8C6C58EF-9892-440F-AFB5-94225F3D9100_payloadInputXItem" name="payload"/>
+        <bpmn2:dataInput id="_8C6C58EF-9892-440F-AFB5-94225F3D9100_payloadInputX" drools:dtype="String" itemSubjectRef="__8C6C58EF-9892-440F-AFB5-94225F3D9100_payloadInputXItem" name="payload"/>
         <bpmn2:dataInput id="_8C6C58EF-9892-440F-AFB5-94225F3D9100_processInstanceIdInputX" drools:dtype="String" itemSubjectRef="__8C6C58EF-9892-440F-AFB5-94225F3D9100_processInstanceIdInputXItem" name="processInstanceId"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_8C6C58EF-9892-440F-AFB5-94225F3D9100_eventTypeInputX</bpmn2:dataInputRefs>
@@ -824,7 +824,7 @@
       <bpmn2:outgoing>_42C55823-A8A7-45C0-881E-CC1D29D4E9D0</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_42814385-DE17-4BBF-BDDF-53B473DF6C95_eventTypeInputX" drools:dtype="String" itemSubjectRef="__42814385-DE17-4BBF-BDDF-53B473DF6C95_eventTypeInputXItem" name="eventType"/>
-        <bpmn2:dataInput id="_42814385-DE17-4BBF-BDDF-53B473DF6C95_payloadInputX" drools:dtype="io.vertx.core.json.JsonObject" itemSubjectRef="__42814385-DE17-4BBF-BDDF-53B473DF6C95_payloadInputXItem" name="payload"/>
+        <bpmn2:dataInput id="_42814385-DE17-4BBF-BDDF-53B473DF6C95_payloadInputX" drools:dtype="String" itemSubjectRef="__42814385-DE17-4BBF-BDDF-53B473DF6C95_payloadInputXItem" name="payload"/>
         <bpmn2:dataInput id="_42814385-DE17-4BBF-BDDF-53B473DF6C95_processInstanceIdInputX" drools:dtype="String" itemSubjectRef="__42814385-DE17-4BBF-BDDF-53B473DF6C95_processInstanceIdInputXItem" name="processInstanceId"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_42814385-DE17-4BBF-BDDF-53B473DF6C95_eventTypeInputX</bpmn2:dataInputRefs>
@@ -858,7 +858,7 @@
       <bpmn2:outgoing>_EE61FC56-2793-48BF-8C43-A34F70A3054F</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_eventTypeInputX" drools:dtype="String" itemSubjectRef="__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_eventTypeInputXItem" name="eventType"/>
-        <bpmn2:dataInput id="_7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_payloadInputX" drools:dtype="io.vertx.core.json.JsonObject" itemSubjectRef="__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_payloadInputXItem" name="payload"/>
+        <bpmn2:dataInput id="_7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_payloadInputX" drools:dtype="String" itemSubjectRef="__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_payloadInputXItem" name="payload"/>
         <bpmn2:dataInput id="_7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_processInstanceIdInputX" drools:dtype="String" itemSubjectRef="__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_processInstanceIdInputXItem" name="processInstanceId"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_eventTypeInputX</bpmn2:dataInputRefs>
@@ -884,9 +884,9 @@
     </bpmn2:serviceTask>
     <bpmn2:parallelGateway id="_4B04E4AC-FF80-40E0-BDBF-980A9247C70D" gatewayDirection="Diverging">
       <bpmn2:incoming>_A0443888-0AA6-4929-87D8-A18262718930</bpmn2:incoming>
-      <bpmn2:outgoing>_5B8F0D10-DFBA-4715-AB9E-F9D7F5C091D5</bpmn2:outgoing>
-      <bpmn2:outgoing>_FFB85155-D19A-4E1F-A22F-B1BD4A85ECEC</bpmn2:outgoing>
       <bpmn2:outgoing>_38B25510-78F4-41A4-8713-43E3C7CB7061</bpmn2:outgoing>
+      <bpmn2:outgoing>_FFB85155-D19A-4E1F-A22F-B1BD4A85ECEC</bpmn2:outgoing>
+      <bpmn2:outgoing>_5B8F0D10-DFBA-4715-AB9E-F9D7F5C091D5</bpmn2:outgoing>
     </bpmn2:parallelGateway>
     <bpmn2:startEvent id="_B74E7A62-26A1-4988-90E9-990248E750EE">
       <bpmn2:outgoing>_84CD6AFA-86ED-4133-90F1-8EAE70669FD2</bpmn2:outgoing>
@@ -1057,17 +1057,17 @@
         <di:waypoint x="154" y="684"/>
         <di:waypoint x="204" y="575"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__4B04E4AC-FF80-40E0-BDBF-980A9247C70D_to_shape__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C" bpmnElement="_5B8F0D10-DFBA-4715-AB9E-F9D7F5C091D5">
-        <di:waypoint x="260" y="575"/>
-        <di:waypoint x="362" y="345"/>
+      <bpmndi:BPMNEdge id="edge_shape__4B04E4AC-FF80-40E0-BDBF-980A9247C70D_to_shape__10C26516-AFBD-44B1-8987-82518BD86689" bpmnElement="_38B25510-78F4-41A4-8713-43E3C7CB7061">
+        <di:waypoint x="232" y="603"/>
+        <di:waypoint x="439" y="784"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__4B04E4AC-FF80-40E0-BDBF-980A9247C70D_to_shape__42814385-DE17-4BBF-BDDF-53B473DF6C95" bpmnElement="_FFB85155-D19A-4E1F-A22F-B1BD4A85ECEC">
         <di:waypoint x="260" y="575"/>
         <di:waypoint x="362" y="576"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__4B04E4AC-FF80-40E0-BDBF-980A9247C70D_to_shape__10C26516-AFBD-44B1-8987-82518BD86689" bpmnElement="_38B25510-78F4-41A4-8713-43E3C7CB7061">
-        <di:waypoint x="232" y="603"/>
-        <di:waypoint x="439" y="784"/>
+      <bpmndi:BPMNEdge id="edge_shape__4B04E4AC-FF80-40E0-BDBF-980A9247C70D_to_shape__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C" bpmnElement="_5B8F0D10-DFBA-4715-AB9E-F9D7F5C091D5">
+        <di:waypoint x="260" y="575"/>
+        <di:waypoint x="362" y="345"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__7AC0AA3E-0F91-42A7-AED6-85662D09CA2C_to_shape__6D0E46AE-3194-4DB0-8C71-BAF0FC116251" bpmnElement="_EE61FC56-2793-48BF-8C43-A34F70A3054F">
         <di:waypoint x="516" y="345"/>
@@ -1089,17 +1089,17 @@
         <di:waypoint x="516" y="835"/>
         <di:waypoint x="832" y="835"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__45B580D2-4C0B-481D-B6E1-468A1A76DCF4_to_shape__D5B0E47C-3992-48CC-8E10-E8E8EA3D0876" bpmnElement="_05B98FF5-D1CF-4BFD-B2EB-166192607319">
-        <di:waypoint x="1001" y="836"/>
-        <di:waypoint x="1067" y="604"/>
+      <bpmndi:BPMNEdge id="edge_shape__9005F385-EECA-4910-B813-3F7F26A159AC_to_shape__D5B0E47C-3992-48CC-8E10-E8E8EA3D0876" bpmnElement="_0E329A34-CE45-4783-8C2F-EE0A979EB90E">
+        <di:waypoint x="861" y="468"/>
+        <di:waypoint x="1067" y="548"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__69D38ACF-C785-48E2-BD19-AB5E9C3CBA8D_to_shape__D5B0E47C-3992-48CC-8E10-E8E8EA3D0876" bpmnElement="_7B59C53A-27A4-4328-8B08-1764950FCA80">
         <di:waypoint x="952" y="575"/>
         <di:waypoint x="1039" y="576"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__9005F385-EECA-4910-B813-3F7F26A159AC_to_shape__D5B0E47C-3992-48CC-8E10-E8E8EA3D0876" bpmnElement="_0E329A34-CE45-4783-8C2F-EE0A979EB90E">
-        <di:waypoint x="861" y="468"/>
-        <di:waypoint x="1067" y="548"/>
+      <bpmndi:BPMNEdge id="edge_shape__45B580D2-4C0B-481D-B6E1-468A1A76DCF4_to_shape__D5B0E47C-3992-48CC-8E10-E8E8EA3D0876" bpmnElement="_05B98FF5-D1CF-4BFD-B2EB-166192607319">
+        <di:waypoint x="1001" y="836"/>
+        <di:waypoint x="1067" y="604"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__C859493A-2362-4EA1-9850-2971FAA9FBC9_to_shape__84B68BB5-9442-4946-96B3-E6A0E02AEA4F" bpmnElement="_2515BB55-E76B-4BBF-8421-CFF13739F4C7">
         <di:waypoint x="996" y="931"/>
@@ -1133,41 +1133,41 @@
         <di:waypoint x="1631" y="359"/>
         <di:waypoint x="1711" y="359"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__6D0E46AE-3194-4DB0-8C71-BAF0FC116251_to_shape__6476EAD6-3416-4146-AC49-3E17092F570A" bpmnElement="_647B82C2-DF28-4500-B56E-22178BDC9B02">
-        <di:waypoint x="861" y="368"/>
-        <di:waypoint x="952" y="146"/>
+      <bpmndi:BPMNEdge id="edge_shape__6D0E46AE-3194-4DB0-8C71-BAF0FC116251_to_shape__B6654CFD-5156-42FE-9EE0-1194EB870CA1" bpmnElement="_EA71F36A-E04F-402E-A979-B50165329AFF">
+        <di:waypoint x="889" y="340"/>
+        <di:waypoint x="936" y="340"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__6D0E46AE-3194-4DB0-8C71-BAF0FC116251_to_shape__9005F385-EECA-4910-B813-3F7F26A159AC" bpmnElement="_E3DCDC26-6DE2-4030-BAB6-8E4143FF0D55">
         <di:waypoint x="861" y="368"/>
         <di:waypoint x="861" y="440"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__6D0E46AE-3194-4DB0-8C71-BAF0FC116251_to_shape__B6654CFD-5156-42FE-9EE0-1194EB870CA1" bpmnElement="_EA71F36A-E04F-402E-A979-B50165329AFF">
-        <di:waypoint x="889" y="340"/>
-        <di:waypoint x="936" y="340"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__E1929E42-3159-490E-BC14-765DA225925B_to_shape__F0A835B5-528D-47B9-8BFD-4C13A1D7EA3F" bpmnElement="_0E127B17-521E-4500-9E54-BDBD172983D7">
-        <di:waypoint x="739" y="604"/>
-        <di:waypoint x="861" y="635"/>
+      <bpmndi:BPMNEdge id="edge_shape__6D0E46AE-3194-4DB0-8C71-BAF0FC116251_to_shape__6476EAD6-3416-4146-AC49-3E17092F570A" bpmnElement="_647B82C2-DF28-4500-B56E-22178BDC9B02">
+        <di:waypoint x="861" y="368"/>
+        <di:waypoint x="952" y="146"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__E1929E42-3159-490E-BC14-765DA225925B_to_shape__69D38ACF-C785-48E2-BD19-AB5E9C3CBA8D" bpmnElement="_8B9ED87E-6442-4EEA-A4AB-DB03C792BD02">
         <di:waypoint x="767" y="576"/>
         <di:waypoint x="924" y="575"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__668B9171-1EC5-4752-9F3E-C9D68D94AFDB_to_shape__C859493A-2362-4EA1-9850-2971FAA9FBC9" bpmnElement="_D128CF2A-ABD6-4765-950B-BA4EACD7F482">
-        <di:waypoint x="860" y="863"/>
-        <di:waypoint x="996" y="903"/>
+      <bpmndi:BPMNEdge id="edge_shape__E1929E42-3159-490E-BC14-765DA225925B_to_shape__F0A835B5-528D-47B9-8BFD-4C13A1D7EA3F" bpmnElement="_0E127B17-521E-4500-9E54-BDBD172983D7">
+        <di:waypoint x="739" y="604"/>
+        <di:waypoint x="861" y="635"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__668B9171-1EC5-4752-9F3E-C9D68D94AFDB_to_shape__45B580D2-4C0B-481D-B6E1-468A1A76DCF4" bpmnElement="_5E698F32-022D-4C79-BB42-91EB0724123F">
         <di:waypoint x="888" y="835"/>
         <di:waypoint x="973" y="836"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__83F7FEAD-5758-4B12-A0BA-23B80243093A_to_shape__316A5460-9FDB-4CC0-95CD-BF98698E5A7F" bpmnElement="_17477EAF-5EEB-4123-82FD-604D23B66506">
-        <di:waypoint x="1608" y="604"/>
-        <di:waypoint x="1744" y="740"/>
+      <bpmndi:BPMNEdge id="edge_shape__668B9171-1EC5-4752-9F3E-C9D68D94AFDB_to_shape__C859493A-2362-4EA1-9850-2971FAA9FBC9" bpmnElement="_D128CF2A-ABD6-4765-950B-BA4EACD7F482">
+        <di:waypoint x="860" y="863"/>
+        <di:waypoint x="996" y="903"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__83F7FEAD-5758-4B12-A0BA-23B80243093A_to_shape__69548561-C161-47DF-A995-37DA0BEDF9A2" bpmnElement="_AE54ED87-A936-4EAD-BF05-7BFAF2815A48">
         <di:waypoint x="1636" y="576"/>
         <di:waypoint x="1716" y="576"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__83F7FEAD-5758-4B12-A0BA-23B80243093A_to_shape__316A5460-9FDB-4CC0-95CD-BF98698E5A7F" bpmnElement="_17477EAF-5EEB-4123-82FD-604D23B66506">
+        <di:waypoint x="1608" y="604"/>
+        <di:waypoint x="1744" y="740"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__6476EAD6-3416-4146-AC49-3E17092F570A_to_shape__33A0F800-5D55-4EEC-9CCF-579E2E0B5CC9" bpmnElement="_CC2D1F3D-8C18-46E1-A9E8-76664DD927BA">
         <di:waypoint x="980" y="174"/>
@@ -1458,7 +1458,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_7hyDUNirEDimcKy8-2f6-A</bpmn2:source>
-    <bpmn2:target>_7hyDUNirEDimcKy8-2f6-A</bpmn2:target>
+    <bpmn2:source>_-4ejINo8EDiSvcfPZJpCzA</bpmn2:source>
+    <bpmn2:target>_-4ejINo8EDiSvcfPZJpCzA</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

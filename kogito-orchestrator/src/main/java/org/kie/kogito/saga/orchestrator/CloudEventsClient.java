@@ -29,7 +29,6 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 public interface CloudEventsClient {
 
     @POST
-    @Path("/broker")
     @Consumes(MediaType.APPLICATION_JSON)
     Response emit(CloudEvent event);
 }

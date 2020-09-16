@@ -25,8 +25,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -49,7 +51,7 @@ public class EventEmitterService {
     @Inject
     ObjectMapper objectMapper;
 
-    public void sendRequest(String processInstanceId, String eventType, String payload) {
+    public void sendRequest(String eventType, String payload, String processInstanceId) {
         LOGGER.info("send sendRequest {} {}", eventType, processInstanceId);
         String message = getMessage(payload, eventType);
         String correlation = UUID.randomUUID().toString();
