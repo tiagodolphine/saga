@@ -3,7 +3,7 @@ package org.acme.kogito.poc.sagas.model;
 import org.acme.kogito.poc.sagas.model.car.CarReservation;
 import org.acme.kogito.poc.sagas.model.flight.FlightReservation;
 import org.acme.kogito.poc.sagas.model.hotel.HotelReservation;
-import org.acme.kogito.poc.sagas.model.payment.PaymentRequest;
+import org.acme.kogito.poc.sagas.model.payment.Payment;
 
 public class RequestEvent {
 
@@ -11,10 +11,10 @@ public class RequestEvent {
             CarReservation.class,
             HotelReservation.class,
             FlightReservation.class,
-            PaymentRequest.class
+            Payment.class
     };
 
-    private static final String CANCEL_SUFFIX = "Cancel";
+    private static final String CANCEL_PREFIX = "Cancel";
 
     private String resource;
     private Class<? extends Reservation> reservation;
@@ -36,8 +36,8 @@ public class RequestEvent {
         if (HotelReservation.class.equals(reservationType)) {
             return HotelReservation.RESOURCE_NAME;
         }
-        if (PaymentRequest.class.equals(reservationType)) {
-            return PaymentRequest.RESOURCE_NAME;
+        if (Payment.class.equals(reservationType)) {
+            return Payment.RESOURCE_NAME;
         }
         throw new IllegalArgumentException("Unknown resource: " + reservationType.getName());
     }
@@ -60,8 +60,8 @@ public class RequestEvent {
 
     public static RequestEvent fromType(String eventType) {
         for (Class<? extends Reservation> r : resources) {
-            if (eventType.startsWith(r.getSimpleName())) {
-                return new RequestEvent(r, eventType.endsWith(CANCEL_SUFFIX));
+            if (eventType.contains(r.getSimpleName())) {
+                return new RequestEvent(r, eventType.startsWith(CANCEL_PREFIX));
             }
         }
         throw new IllegalArgumentException("Unable to parse the provided event type: " + eventType);

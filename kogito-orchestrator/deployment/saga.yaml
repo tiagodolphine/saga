@@ -1,0 +1,57 @@
+apiVersion: examples.kogito.kie.org/v1
+kind: Saga
+metadata:
+  name: trip-reservation
+spec:
+  template:
+    spec:
+      id: trip-reservation
+      version: v1
+      name: Trip Reservation
+      receive:
+        type: TripReservationRequest
+      replyWith:
+        type: TripReservationSuccess
+      replyErrorWith:
+        type: TripReservationFailed
+      steps:
+        - parallel:
+            - step:
+                name: Book Hotel
+                send:
+                  type: HotelReservationRequest
+                expect:
+                  type: HotelReservationSuccess
+                expectError:
+                  type: HotelReservationFailed
+                compensateWith:
+                  type: CancelHotelReservation
+                waitFor: T20M
+            - step:
+                name: Hire Car
+                send:
+                  type: CarReservationRequest
+                expect:
+                  type: CarReservationSuccess
+                expectError:
+                  type: CarReservationFailed
+                compensateWith:
+                  type: CancelCarReservation
+            - step:
+                name: Book Flight
+                send:
+                  type: FlightReservationRequest
+                expect:
+                  type: FlightReservationSuccess
+                expectError:
+                  type: FlightReservationFailed
+                compensateWith:
+                  type: CancelFlightReservation
+        - step:
+            name: Process Payment
+            send:
+              type: PaymentRequest
+            expect:
+              type: PaymentSuccess
+            expectError:
+              type: PaymentFailed

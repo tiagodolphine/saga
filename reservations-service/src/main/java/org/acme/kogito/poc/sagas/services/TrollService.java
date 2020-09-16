@@ -1,6 +1,8 @@
 package org.acme.kogito.poc.sagas.services;
 
+import java.time.Duration;
 import java.util.Random;
+import java.util.ResourceBundle;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -23,10 +25,27 @@ public class TrollService {
         return r.nextDouble() <= failProbability;
     }
 
-    public int withDelay() {
-        if(delayMax == delayMin) {
-            return delayMax;
+    public boolean shouldFail(Boolean fail) {
+        if(fail == null) {
+            return shouldFail();
         }
-        return r.nextInt(delayMax - delayMin) + delayMin;
+        return fail;
+    }
+
+    public Duration withDelay() {
+        if(delayMax == delayMin) {
+            return Duration.ofSeconds(delayMax);
+        }
+        return Duration.ofSeconds(r.nextInt(delayMax - delayMin) + delayMin);
+    }
+
+    public Duration withDelay(Integer delay) {
+        if(delay == null) {
+            return withDelay();
+        }
+        if(delay == 0) {
+            return null;
+        }
+        return Duration.ofSeconds(delay);
     }
 }

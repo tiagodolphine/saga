@@ -14,14 +14,12 @@ spec:
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger
 metadata:
-  annotations:
-    knative-eventing-injection: enabled
   name: hotel-reservations
 spec:
   broker: default
   filter:
     attributes:
-      type: HotelReservation
+      type: HotelReservationRequest
   subscriber:
     ref:
       apiVersion: serving.knative.dev/v1
@@ -31,14 +29,12 @@ spec:
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger
 metadata:
-  annotations:
-    knative-eventing-injection: enabled
   name: hotel-reservations-cancel
 spec:
   broker: default
   filter:
     attributes:
-      type: HotelReservationCancel
+      type: CancelHotelReservation
   subscriber:
     ref:
       apiVersion: serving.knative.dev/v1

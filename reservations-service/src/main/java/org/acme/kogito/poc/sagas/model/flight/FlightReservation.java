@@ -8,7 +8,7 @@ import org.acme.kogito.poc.sagas.model.Person;
 import org.acme.kogito.poc.sagas.model.Reservation;
 
 @RegisterForReflection
-public class FlightReservation implements Reservation {
+public class FlightReservation extends Reservation {
 
     public static final String RESOURCE_NAME = "flights";
 
@@ -32,4 +32,5 @@ public class FlightReservation implements Reservation {
     public void setItinerary(Collection<Trip> itinerary) {
         this.itinerary = itinerary;
     }
+
 }

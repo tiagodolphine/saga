@@ -6,7 +6,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.acme.kogito.poc.sagas.model.Reservation;
 
 @RegisterForReflection
-public class PaymentRequest implements Reservation {
+public class Payment extends Reservation {
 
     public static final String RESOURCE_NAME = "payments";
 

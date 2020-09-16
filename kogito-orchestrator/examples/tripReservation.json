@@ -1,0 +1,53 @@
+{
+  "CarReservationRequest": {
+    "driver": {
+      "firstName": "Ruben",
+      "lastName": "Romero Montes",
+      "passport": "X2342343-D"
+    },
+    "license": "12345CAR",
+    "type": "B",
+    "startOffice": "CBO-MAD-001",
+    "start": "2020-08-26T09:00:00+02:00",
+    "end": "2020-08-27T19:00:00+02:00"
+  },
+  "HotelReservationRequest": {
+    "guest": {
+      "firstName": "Ruben",
+      "lastName": "Romero Montes",
+      "passport": "X2342343-D"
+    },
+    "ref": "FASTHOTEL-MADRID-0001",
+    "type": "STANDARD",
+    "start": "2020-08-25T20:00:00+02:00",
+    "end": "2020-08-27T13:00:00+02:00"
+  },
+  "FlightReservationRequest": {
+    "passenger": {
+      "firstName": "Ruben",
+      "lastName": "Romero Montes",
+      "passport": "X2342343-D"
+    },
+    "itinerary": [
+      {
+        "departure": "LAX",
+        "arrival": "MAD",
+        "departureAt": "2020-08-24T07:00:00-07:00",
+        "flight": "IB6170",
+        "seat": "8D"
+      },
+      {
+        "departure": "MAD",
+        "arrival": "LAX",
+        "departureAt": "2020-08-28T07:00:00+02:00",
+        "flight": "IB6170",
+        "seat": "12C"
+      }
+    ]
+  },
+  "PaymentRequest": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+    "amount": 2640.40,
+    "currency": "EUR"
+  }
+}

@@ -14,14 +14,12 @@ spec:
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger
 metadata:
-  annotations:
-    knative-eventing-injection: enabled
   name: flight-reservations
 spec:
   broker: default
   filter:
     attributes:
-      type: FlightReservation
+      type: FlightReservationRequest
   subscriber:
     ref:
       apiVersion: serving.knative.dev/v1
@@ -31,14 +29,12 @@ spec:
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger
 metadata:
-  annotations:
-    knative-eventing-injection: enabled
   name: flight-reservations-cancel
 spec:
   broker: default
   filter:
     attributes:
-      type: FlightReservationCancel
+      type: CancelFlightReservation
   subscriber:
     ref:
       apiVersion: serving.knative.dev/v1

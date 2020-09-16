@@ -8,7 +8,7 @@ import org.acme.kogito.poc.sagas.model.Person;
 import org.acme.kogito.poc.sagas.model.Reservation;
 
 @RegisterForReflection
-public class HotelReservation implements Reservation {
+public class HotelReservation extends Reservation {
 
     public static final String RESOURCE_NAME = "hotels";
 
@@ -62,4 +62,5 @@ public class HotelReservation implements Reservation {
     public void setType(RoomType type) {
         this.type = type;
     }
+
 }

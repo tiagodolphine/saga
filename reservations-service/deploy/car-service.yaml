@@ -14,14 +14,12 @@ spec:
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger
 metadata:
-  annotations:
-    knative-eventing-injection: enabled
   name: car-reservations
 spec:
   broker: default
   filter:
     attributes:
-      type: CarReservation
+      type: CarReservationRequest
   subscriber:
     ref:
       apiVersion: serving.knative.dev/v1
@@ -31,14 +29,12 @@ spec:
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger
 metadata:
-  annotations:
-    knative-eventing-injection: enabled
   name: car-reservations-cancel
 spec:
   broker: default
   filter:
     attributes:
-      type: CarReservationCancel
+      type: CancelCarReservation
   subscriber:
     ref:
       apiVersion: serving.knative.dev/v1
