@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -28,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.groups.UniOnItem;
 import org.acme.kogito.poc.sagas.model.RequestEvent;
 import org.acme.kogito.poc.sagas.model.Reservation;
 import org.acme.kogito.poc.sagas.model.car.CarReservation;
@@ -92,18 +90,14 @@ public class ReservationResource {
             }
             Boolean success = uni.map(ev -> {
                 try {
-
                     Boolean added = service.add(event.getSubject(), resource);
-                    if (trollService.shouldFail(resource.shouldFail())) {
-                        throw new OnPurposeException("Should fail");
+                    if(trollService.shouldFail(resource.shouldFail())) {
+                        return false;
                     }
                     return added;
                 } catch (IllegalArgumentException e) {
                     LOGGER.error("Unable to process reservation for " + req.getReservation(), e);
                     throw new javax.ws.rs.BadRequestException();
-                } catch (OnPurposeException e) {
-                    LOGGER.error("Failed on purpose " + req.getReservation(), e);
-                    throw new InternalServerErrorException(e);
                 }
             }).await().indefinitely();
             return Response.ok(CloudEventBuilder.v1()

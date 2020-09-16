@@ -9,7 +9,9 @@
     "type": "B",
     "startOffice": "CBO-MAD-001",
     "start": "2020-08-26T09:00:00+02:00",
-    "end": "2020-08-27T19:00:00+02:00"
+    "end": "2020-08-27T19:00:00+02:00",
+    "fail": false,
+    "delay": 0
   },
   "HotelReservationRequest": {
     "guest": {
@@ -20,7 +22,9 @@
     "ref": "FASTHOTEL-MADRID-0001",
     "type": "STANDARD",
     "start": "2020-08-25T20:00:00+02:00",
-    "end": "2020-08-27T13:00:00+02:00"
+    "end": "2020-08-27T13:00:00+02:00",
+    "fail": false,
+    "delay": 0
   },
   "FlightReservationRequest": {
     "passenger": {
@@ -43,11 +47,15 @@
         "flight": "IB6170",
         "seat": "12C"
       }
-    ]
+    ],
+    "fail": false,
+    "delay": 0
   },
   "PaymentRequest": {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
     "amount": 2640.40,
-    "currency": "EUR"
+    "currency": "EUR",
+    "fail": true,
+    "delay": 0
   }
 }

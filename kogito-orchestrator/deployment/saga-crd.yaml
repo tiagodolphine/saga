@@ -31,4 +31,3 @@ spec:
           properties:
             spec:
               type: object
-

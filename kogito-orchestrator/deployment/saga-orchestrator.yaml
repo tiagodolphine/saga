@@ -10,12 +10,13 @@ spec:
     spec:
       containers:
         - image: quay.io/ruben/saga-orchestrator:latest
+          env:
+            - name: BROKER_URL
+              value: http://broker-ingress.knative-eventing.svc.cluster.local/ruben-saga/default
 ---
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger
 metadata:
-  annotations:
-    knative-eventing-injection: enabled
   name: saga-orchestrator
 spec:
   broker: default
