@@ -13,6 +13,8 @@ spec:
           env:
             - name: BROKER_URL
               value: http://broker-ingress.knative-eventing.svc.cluster.local/ruben-saga/default
+            - name: SAGA_PROCESS_ID
+              value: orders
 ---
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger

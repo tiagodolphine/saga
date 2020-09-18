@@ -31,6 +31,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.cloudevents.CloudEvent;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.Model;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -55,6 +56,9 @@ public class CloudEventsResource {
     @Inject
     ObjectMapper objectMapper;
 
+    @ConfigProperty(name = "saga.process.id")
+    String sagaProcessId;
+
     @PostConstruct
     public void init() {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -65,15 +69,11 @@ public class CloudEventsResource {
     public Response receive(CloudEvent event) throws Exception {
         final String eventType = event.getType();
 
-//        final String sagaDefinitionId = Optional.of(eventType)
-//                .filter(this::isSagaRequest)
-//                .map(t -> t.split(SAGA_REQUEST)[0])
-//                .orElseGet(() -> Optional
-//                        .ofNullable(event.getExtension("saga-definition-id"))//header ce-saga-definition-id
-//                        .map(String::valueOf)
-//                        .orElse("tripReservation"));
-
-        final String sagaDefinitionId = "orders";
+        //default process is get from the config property saga.process.id, otherwise use the custom CE param
+        final String sagaDefinitionId = Optional
+                        .ofNullable(event.getExtension("saga-definition-id"))//header ce-saga-definition-id
+                        .map(String::valueOf)
+                        .orElse(sagaProcessId);
 
         final Process<? extends Model> process = getProcess(sagaDefinitionId);
 
