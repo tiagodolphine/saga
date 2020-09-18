@@ -18,9 +18,10 @@ package org.kie.kogito.saga.orchestrator.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.vertx.core.json.JsonObject;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.kie.kogito.Model;
 
+@RegisterForReflection
 public class SagaModel implements Model {
 
     private static final String ID = "id";
@@ -30,7 +31,7 @@ public class SagaModel implements Model {
     private static final String EVENT = "event";
 
     private String id;
-    private JsonObject payload;
+    private String payload;
     private String processInstanceId;
     private String sagaId;
     private String event;
@@ -44,18 +45,18 @@ public class SagaModel implements Model {
         return this;
     }
 
-    public JsonObject getPayload() {
+    public String getPayload() {
         return payload;
     }
 
     public SagaModel setPayload(byte[] payload) {
         if (payload != null) {
-            this.payload = new JsonObject(new String(payload));
+            this.payload = new String(payload);
         }
         return this;
     }
 
-    public SagaModel setPayload(JsonObject payload) {
+    public SagaModel setPayload(String payload) {
         this.payload = payload;
         return this;
     }
@@ -93,7 +94,7 @@ public class SagaModel implements Model {
             this.id = (String) params.get(ID);
         }
         if (params.containsKey(PAYLOAD)) {
-            this.payload = (JsonObject) params.get(PAYLOAD);
+            this.payload = (String) params.get(PAYLOAD);
         }
         if (params.containsKey(EVENT)) {
             this.event = (String) params.get(EVENT);
@@ -113,7 +114,7 @@ public class SagaModel implements Model {
 
     public void fromMap(String id, Map<String, Object> params) {
         this.id = id;
-        this.payload = (JsonObject) params.get(PAYLOAD);
+        this.payload = (String) params.get(PAYLOAD);
         this.event = (String) params.get(EVENT);
         this.sagaId = (String) params.get(SAGA_ID);
         this.processInstanceId = (String) params.get(PROCESS_INSTANCE_ID);
@@ -128,12 +129,5 @@ public class SagaModel implements Model {
         params.put(SAGA_ID, this.sagaId);
         params.put(EVENT, this.event);
         return params;
-    }
-
-    public static String getMessage(JsonObject payload, String service) {
-        if (!payload.containsKey(service)) {
-            throw new IllegalArgumentException("Unable to retrieve message for service: " + service);
-        }
-        return payload.getJsonObject(service).encodePrettily();
     }
 }

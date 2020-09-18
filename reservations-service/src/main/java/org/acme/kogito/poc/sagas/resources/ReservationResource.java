@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -32,6 +33,9 @@ import org.acme.kogito.poc.sagas.model.Reservation;
 import org.acme.kogito.poc.sagas.model.car.CarReservation;
 import org.acme.kogito.poc.sagas.model.flight.FlightReservation;
 import org.acme.kogito.poc.sagas.model.hotel.HotelReservation;
+import org.acme.kogito.poc.sagas.model.orders.OrderPayment;
+import org.acme.kogito.poc.sagas.model.orders.Shipping;
+import org.acme.kogito.poc.sagas.model.orders.Stock;
 import org.acme.kogito.poc.sagas.model.payment.Payment;
 import org.acme.kogito.poc.sagas.services.ReservationService;
 import org.acme.kogito.poc.sagas.services.TrollService;
@@ -63,6 +67,10 @@ public class ReservationResource {
         services.put(FlightReservation.RESOURCE_NAME, new ReservationService());
         services.put(HotelReservation.RESOURCE_NAME, new ReservationService());
         services.put(Payment.RESOURCE_NAME, new ReservationService());
+        //Orders
+        services.put(OrderPayment.RESOURCE_NAME, new ReservationService());
+        services.put(Stock.RESOURCE_NAME, new ReservationService());
+        services.put(Shipping.RESOURCE_NAME, new ReservationService());
     }
 
     @GET
@@ -150,6 +158,4 @@ public class ReservationResource {
         }
         return resource + "Failed";
     }
-
-
 }

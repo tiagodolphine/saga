@@ -1,0 +1,29 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: saga-orchestrator-orders
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containers:
+        - image: quay.io/tiagodolphine/saga-orchestrator:latest
+          env:
+            - name: BROKER_URL
+              value: http://broker-ingress.knative-eventing.svc.cluster.local/ruben-saga/default
+            - name: SAGA_PROCESS_ID
+              value: orders
+---
+apiVersion: eventing.knative.dev/v1beta1
+kind: Trigger
+metadata:
+  name: saga-orchestrator-orders
+spec:
+  broker: default
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: saga-orchestrator-orders
