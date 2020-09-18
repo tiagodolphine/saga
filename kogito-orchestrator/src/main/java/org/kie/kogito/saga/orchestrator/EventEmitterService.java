@@ -52,7 +52,7 @@ public class EventEmitterService {
     ObjectMapper objectMapper;
 
     public void sendRequest(String eventType, String payload, String processInstanceId) {
-        LOGGER.info("send sendRequest {} {}", eventType, processInstanceId);
+        LOGGER.info("sendRequest {} {}", eventType, processInstanceId);
         String message = getMessage(payload, eventType);
         String correlation = UUID.randomUUID().toString();
         //FIXME: get the saga id
@@ -74,6 +74,7 @@ public class EventEmitterService {
     }
 
     public void sendResponse(String eventType, String sagaId, String processInstanceId) {
+        LOGGER.info("sendResponse {} {}", eventType, processInstanceId);
         CloudEvent event = CloudEventBuilder.v1()
                 .withId(UUID.randomUUID().toString())
                 .withType(eventType)
@@ -88,7 +89,7 @@ public class EventEmitterService {
     }
 
     public void sendCompensation(String compensateForType, String eventType, String processInstanceId) {
-        LOGGER.info("send compensation {} {} {}", compensateForType, eventType, processInstanceId);
+        LOGGER.info("sendCompensation {} {} {}", compensateForType, eventType, processInstanceId);
         String eventId = correlationService.getId(new CorrelationKey().setEventType(compensateForType).setProcessInstanceId(processInstanceId));
         //FIXME
         String sagaId = processInstanceId;

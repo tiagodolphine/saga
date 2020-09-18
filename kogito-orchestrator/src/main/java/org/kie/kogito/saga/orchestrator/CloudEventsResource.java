@@ -15,10 +15,13 @@
  */
 package org.kie.kogito.saga.orchestrator;
 
+import java.util.Objects;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
@@ -26,6 +29,7 @@ import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.cloudevents.CloudEvent;
 import org.kie.kogito.Model;
 import org.kie.kogito.process.Process;
@@ -40,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class CloudEventsResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudEventsResource.class);
+    public static final String SAGA_REQUEST = "SagaRequest";
 
     @Inject
     CorrelationService correlationService;
@@ -50,32 +55,51 @@ public class CloudEventsResource {
     @Inject
     ObjectMapper objectMapper;
 
+    @PostConstruct
+    public void init() {
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response receive(CloudEvent event) throws Exception {
-        //this is the process id (from cloud event extension header)
-        String sagaDefinitionId = Optional
-                .ofNullable(event.getExtension("saga-definition-id"))//header ce-saga-definition-id
-                .map(String::valueOf)
-                .orElse("tripReservation");
+        final String eventType = event.getType();
+
+//        final String sagaDefinitionId = Optional.of(eventType)
+//                .filter(this::isSagaRequest)
+//                .map(t -> t.split(SAGA_REQUEST)[0])
+//                .orElseGet(() -> Optional
+//                        .ofNullable(event.getExtension("saga-definition-id"))//header ce-saga-definition-id
+//                        .map(String::valueOf)
+//                        .orElse("tripReservation"));
+
+        final String sagaDefinitionId = "orders";
 
         final Process<? extends Model> process = getProcess(sagaDefinitionId);
 
-        String eventType = event.getType();
-        switch (eventType) {
-            case "SagaRequest":
-                SagaModel model = new SagaModel()
-                        .setId(event.getId())
-                        .setPayload(event.getData())
-                        .setSagaId(event.getSubject());
-                ProcessInstance<? extends Model> instance = process.createInstance(createDomainModel(process, model));
-                instance.start();
-                LOGGER.info("Started new {} instance.", sagaDefinitionId);
-                break;
-            default:
-                processIntermediateEvent(event, process);
+        if (Objects.isNull(process)) {
+            throw new NotFoundException("Saga not found " + sagaDefinitionId);
         }
+
+        if (isSagaRequest(eventType)) {
+            String sagaId = event.getSubject();
+            SagaModel model = new SagaModel()
+                    .setId(event.getId())
+                    .setPayload(event.getData())
+                    .setSagaId(sagaId);
+            ProcessInstance<? extends Model> instance = process.createInstance(sagaId,
+                                                                               createDomainModel(process, model));
+            instance.start();
+            LOGGER.info("Started new {} instance.", sagaDefinitionId);
+        } else {
+            processIntermediateEvent(event, process);
+        }
+
         return Response.accepted().build();
+    }
+
+    private boolean isSagaRequest(String t) {
+        return t.contains(SAGA_REQUEST);
     }
 
     private Model createDomainModel(Process<? extends Model> process, SagaModel model) throws JsonProcessingException {

@@ -18,8 +18,10 @@ package org.kie.kogito.saga.orchestrator.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.kie.kogito.Model;
 
+@RegisterForReflection
 public class SagaModel implements Model {
 
     private static final String ID = "id";
