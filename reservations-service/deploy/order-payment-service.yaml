@@ -9,7 +9,7 @@ spec:
         autoscaling.knative.dev/minScale: "1"
     spec:
       containers:
-        - image: quay.io/tiagodolphine/reservations-service:latest
+        - image: quay.io/ruben/reservations-service:latest
 ---
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger

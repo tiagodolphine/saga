@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class CloudEventsResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudEventsResource.class);
-    public static final String SAGA_REQUEST = "SagaRequest";
+    public static final String REQUEST_SUFFIX = "Request";
 
     @Inject
     CorrelationService correlationService;
@@ -66,45 +67,32 @@ public class CloudEventsResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response receive(CloudEvent event) throws Exception {
+    public Response receive(CloudEvent event) {
         final String eventType = event.getType();
-
-        //default process is get from the config property saga.process.id, otherwise use the custom CE param
-        final String sagaDefinitionId = Optional
-                        .ofNullable(event.getExtension("saga-definition-id"))//header ce-saga-definition-id
-                        .map(String::valueOf)
-                        .orElse(sagaProcessId);
-
-        final Process<? extends Model> process = getProcess(sagaDefinitionId);
-
+        final Process<? extends Model> process = getProcess(sagaProcessId);
         if (Objects.isNull(process)) {
-            throw new NotFoundException("Saga not found " + sagaDefinitionId);
+            throw new NotFoundException("Saga definition not found " + sagaProcessId);
         }
-
-        if (isSagaRequest(eventType)) {
+        if (eventType.endsWith(REQUEST_SUFFIX)) {
             String sagaId = event.getSubject();
             SagaModel model = new SagaModel()
                     .setId(event.getId())
                     .setPayload(event.getData())
-                    .setSagaId(sagaId);
-            ProcessInstance<? extends Model> instance = process.createInstance(sagaId,
-                                                                               createDomainModel(process, model));
+                    .setSagaId(sagaId)
+                    .setSagaDefinitionId(sagaProcessId);
+            ProcessInstance<? extends Model> instance = process.createInstance(sagaId, createDomainModel(process, model));
             instance.start();
-            LOGGER.info("Started new {} instance.", sagaDefinitionId);
+            LOGGER.info("Started new {} instance.", sagaProcessId);
         } else {
             processIntermediateEvent(event, process);
         }
-
         return Response.accepted().build();
     }
 
-    private boolean isSagaRequest(String t) {
-        return t.contains(SAGA_REQUEST);
-    }
-
-    private Model createDomainModel(Process<? extends Model> process, SagaModel model) throws JsonProcessingException {
-        return objectMapper.readValue(objectMapper.writeValueAsString(model),
-                                      process.createModel().getClass());
+    private Model createDomainModel(Process<? extends Model> process, SagaModel model) {
+        Model domainModel = process.createModel();
+        domainModel.fromMap(model.toMap());
+        return domainModel;
     }
 
     private void processIntermediateEvent(CloudEvent event, Process<? extends Model> process) {

@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: saga-orchestrator
+  name: trip-reservation-saga
 spec:
   template:
     metadata:
@@ -13,15 +13,35 @@ spec:
           env:
             - name: BROKER_URL
               value: http://broker-ingress.knative-eventing.svc.cluster.local/ruben-saga/default
+            - name: SAGA_PROCESS_ID
+              value: tripReservation
 ---
 apiVersion: eventing.knative.dev/v1beta1
 kind: Trigger
 metadata:
-  name: saga-orchestrator
+  name: trip-reservation-trigger
 spec:
   broker: default
+  filter:
+    attributes:
+      type: TripReservationRequest
   subscriber:
     ref:
       apiVersion: serving.knative.dev/v1
       kind: Service
-      name: saga-orchestrator
+      name: trip-reservation-saga
+---
+apiVersion: eventing.knative.dev/v1beta1
+kind: Trigger
+metadata:
+  name: trip-events-trigger
+spec:
+  broker: default
+  filter:
+    attributes:
+      sagaid: "tripReservation"
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: trip-reservation-saga
