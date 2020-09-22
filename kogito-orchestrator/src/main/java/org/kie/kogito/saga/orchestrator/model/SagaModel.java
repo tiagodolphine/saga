@@ -29,11 +29,13 @@ public class SagaModel implements Model {
     private static final String PROCESS_INSTANCE_ID = "processInstanceId";
     private static final String SAGA_ID = "sagaId";
     private static final String EVENT = "event";
+    private static final String SAGA_DEFINITION_ID = "sagaDefinitionId";
 
     private String id;
     private String payload;
     private String processInstanceId;
     private String sagaId;
+    private String sagaDefinitionId;
     private String event;
 
     public String getId() {
@@ -79,6 +81,15 @@ public class SagaModel implements Model {
         return this;
     }
 
+    public String getSagaDefinitionId() {
+        return sagaDefinitionId;
+    }
+
+    public SagaModel setSagaDefinitionId(String sagaDefinitionId) {
+        this.sagaDefinitionId = sagaDefinitionId;
+        return this;
+    }
+
     public String getEvent() {
         return event;
     }
@@ -102,6 +113,9 @@ public class SagaModel implements Model {
         if (params.containsKey(SAGA_ID)) {
             this.sagaId = (String) params.get(SAGA_ID);
         }
+        if (params.containsKey(SAGA_DEFINITION_ID)) {
+            this.sagaDefinitionId = (String) params.get(SAGA_DEFINITION_ID);
+        }
         if (params.containsKey(PROCESS_INSTANCE_ID)) {
             this.processInstanceId = (String) params.get(PROCESS_INSTANCE_ID);
         }
@@ -117,6 +131,7 @@ public class SagaModel implements Model {
         this.payload = (String) params.get(PAYLOAD);
         this.event = (String) params.get(EVENT);
         this.sagaId = (String) params.get(SAGA_ID);
+        this.sagaDefinitionId = (String) params.get(SAGA_DEFINITION_ID);
         this.processInstanceId = (String) params.get(PROCESS_INSTANCE_ID);
     }
 
@@ -127,6 +142,7 @@ public class SagaModel implements Model {
         params.put(PAYLOAD, payload);
         params.put(PROCESS_INSTANCE_ID, this.processInstanceId);
         params.put(SAGA_ID, this.sagaId);
+        params.put(SAGA_DEFINITION_ID, this.sagaDefinitionId);
         params.put(EVENT, this.event);
         return params;
     }

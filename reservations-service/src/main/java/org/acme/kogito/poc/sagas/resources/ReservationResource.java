@@ -82,7 +82,6 @@ public class ReservationResource {
 
     @POST
     public Response receive(CloudEvent event) {
-        final URI absolutePath = uriInfo.getAbsolutePath();
         final RequestEvent req = RequestEvent.fromType(event.getType());
         ReservationService service = services.get(req.getResource());
         if (req.isCancellation()) {
@@ -108,14 +107,15 @@ public class ReservationResource {
                     throw new javax.ws.rs.BadRequestException();
                 }
             }).await().indefinitely();
-            return Response.ok(CloudEventBuilder.v1()
+            io.cloudevents.core.v1.CloudEventBuilder cloudEventBuilder = CloudEventBuilder.v1()
                     .withId(UUID.randomUUID().toString())
                     .withSubject(event.getSubject())
                     .withType(getResponseType(req.getReservationName(), success))
-                    .withSource(absolutePath)
-                    .withDataContentType(MediaType.APPLICATION_JSON)
-                    .build())
-                    .build();
+                    .withSource(URI.create(req.getResource()))
+                    .withDataContentType(MediaType.APPLICATION_JSON);
+            event.getExtensionNames()
+                    .forEach(extName -> cloudEventBuilder.withExtension(extName, (String) event.getExtension(extName)));
+            return Response.ok(cloudEventBuilder.build()).build();
         } catch (IOException e) {
             LOGGER.error("Unable to process reservation for " + req.getReservation(), e);
             throw new javax.ws.rs.BadRequestException();

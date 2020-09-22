@@ -18,17 +18,14 @@ package org.kie.kogito.saga.orchestrator;
 import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -41,6 +38,10 @@ public class EventEmitterService {
 
     private static Logger LOGGER = LoggerFactory.getLogger(EventEmitterService.class);
 
+    //This extension attribute can be used for filtering out events of the same type
+    //but involved services must propagate all extensions in the response cloudevent
+    private static final String SAGA_EXTENSION = "sagaid";
+
     @Inject
     @RestClient
     CloudEventsClient eventsClient;
@@ -51,19 +52,18 @@ public class EventEmitterService {
     @Inject
     ObjectMapper objectMapper;
 
-    public void sendRequest(String eventType, String payload, String processInstanceId) {
+    public void sendRequest(String eventType, String payload, String processInstanceId, String sagaDefinitionId) {
         LOGGER.info("sendRequest {} {}", eventType, processInstanceId);
         String message = getMessage(payload, eventType);
         String correlation = UUID.randomUUID().toString();
-        //FIXME: get the saga id
-        String sagaId = processInstanceId;
         CloudEvent event = CloudEventBuilder.v1()
                 .withId(UUID.randomUUID().toString())
                 .withType(eventType)
-                .withSource(createSource(sagaId))
+                .withSource(createSource(sagaDefinitionId))
                 .withSubject(correlation)
                 .withData(message.getBytes())
                 .withDataContentType(MediaType.APPLICATION_JSON)
+                .withExtension(SAGA_EXTENSION, sagaDefinitionId)
                 .build();
         Response response = eventsClient.emit(event);
         if (response.getStatus() < Response.Status.BAD_REQUEST.getStatusCode()) {
@@ -73,12 +73,12 @@ public class EventEmitterService {
         }
     }
 
-    public void sendResponse(String eventType, String sagaId, String processInstanceId) {
+    public void sendResponse(String eventType, String sagaId, String processInstanceId, String sagaDefinitionId) {
         LOGGER.info("sendResponse {} {}", eventType, processInstanceId);
         CloudEvent event = CloudEventBuilder.v1()
                 .withId(UUID.randomUUID().toString())
                 .withType(eventType)
-                .withSource(createSource(sagaId))
+                .withSource(createSource(sagaDefinitionId))
                 .withSubject(sagaId)
                 .withDataContentType(MediaType.APPLICATION_JSON)
                 .build();
@@ -88,18 +88,17 @@ public class EventEmitterService {
         }
     }
 
-    public void sendCompensation(String compensateForType, String eventType, String processInstanceId) {
+    public void sendCompensation(String eventType, String processInstanceId, String compensateForType, String sagaDefinitionId) {
         LOGGER.info("sendCompensation {} {} {}", compensateForType, eventType, processInstanceId);
         String eventId = correlationService.getId(new CorrelationKey().setEventType(compensateForType).setProcessInstanceId(processInstanceId));
-        //FIXME
-        String sagaId = processInstanceId;
         if (eventId != null) {
             CloudEvent event = CloudEventBuilder.v1()
                     .withId(UUID.randomUUID().toString())
                     .withType(eventType)
-                    .withSource(createSource(sagaId))
+                    .withSource(createSource(sagaDefinitionId))
                     .withSubject(eventId)
                     .withDataContentType(MediaType.APPLICATION_JSON)
+                    .withExtension(SAGA_EXTENSION, sagaDefinitionId)
                     .build();
             eventsClient.emit(event);
         }

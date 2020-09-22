@@ -11,9 +11,6 @@
     "fail": false,
     "delay": 2
   },
-  "CancelStock": {
-    "id": "faa53a99-930d-488f-977d-eb898b4cc880"
-  },
   "ScheduleShipping": {
     "orderId": "025316cb-77f9-48a9-9cff-455f91e585c8",
     "customer": {
@@ -29,9 +26,6 @@
     "fail": false,
     "delay": 2
   },
-  "CancelShipping": {
-    "id": "025316cb-77f9-48a9-9cff-455f91e585c8"
-  },
   "CreateOrderPayment": {
     "orderId": "025316cb-77f9-48a9-9cff-455f91e585c8",
     "customerId": "77c22e55-4b92-4338-bc86-f1fa518a4852",
@@ -42,14 +36,5 @@
     },
     "fail": false,
     "delay": 2
-  },
-  "CancelOrderPayment": {
-    "id": "025316cb-77f9-48a9-9cff-455f91e585c8"
-  },
-  "OrderSuccess": {
-    "orderId": "025316cb-77f9-48a9-9cff-455f91e585c8"
-  },
-  "OrderFailed": {
-    "orderId": "025316cb-77f9-48a9-9cff-455f91e585c8"
   }
 }
