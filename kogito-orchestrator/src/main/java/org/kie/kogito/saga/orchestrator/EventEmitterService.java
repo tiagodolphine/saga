@@ -104,6 +104,42 @@ public class EventEmitterService {
         }
     }
 
+    public void sendRequest2(String eventType, String payload, String processInstanceId, String sagaDefinitionId) {
+        LOGGER.info("sendRequest {} {}", eventType, processInstanceId);
+        String correlation = UUID.randomUUID().toString();
+        CloudEvent event = CloudEventBuilder.v1()
+                .withId(UUID.randomUUID().toString())
+                .withType(eventType)
+                .withSource(createSource(sagaDefinitionId))
+                .withSubject(correlation)
+                .withData(payload.getBytes())
+                .withDataContentType(MediaType.APPLICATION_JSON)
+                .withExtension(SAGA_EXTENSION, sagaDefinitionId)
+                .build();
+        Response response = eventsClient.emit(event);
+        if (response.getStatus() < Response.Status.BAD_REQUEST.getStatusCode()) {
+            correlationService.add(correlation, new CorrelationKey()
+                    .setEventType(eventType)
+                    .setProcessInstanceId(processInstanceId));
+        }
+    }
+
+    public void sendCompensation2(String eventType, String processInstanceId, String compensateForType, String sagaDefinitionId) {
+        LOGGER.info("sendCompensation {} {} {}", compensateForType, eventType, processInstanceId);
+        String eventId = correlationService.getId(new CorrelationKey().setEventType(compensateForType).setProcessInstanceId(processInstanceId));
+        if (eventId != null) {
+            CloudEvent event = CloudEventBuilder.v1()
+                    .withId(UUID.randomUUID().toString())
+                    .withType(eventType)
+                    .withSource(createSource(sagaDefinitionId))
+                    .withSubject(eventId)
+                    .withDataContentType(MediaType.APPLICATION_JSON)
+                    .withExtension(SAGA_EXTENSION, sagaDefinitionId)
+                    .build();
+            eventsClient.emit(event);
+        }
+    }
+
     public String getMessage(String payload, String service) {
         try {
             return Optional.ofNullable(objectMapper.readValue(payload, JsonNode.class))

@@ -1,0 +1,46 @@
+apiVersion: examples.kogito.kie.org/v1
+kind: Saga
+metadata:
+  name: trip-reservation
+spec:
+  template:
+    spec:
+      id: trip-reservation
+      version: v1
+      name: Trip Reservation
+      events:
+        broker:
+          name: default
+        receive: TripReservationRequest
+        replyWith: TripReservationSuccess
+        replyErrorWith: TripReservationFailed
+      steps:
+        - parallel:
+            - step:
+                name: Book Hotel
+                events:
+                  broker:
+                    name: book-service-broker
+                    type: kafka
+                  send: HotelReservationRequest
+                  expect: HotelReservationSuccess
+                  compensateWith: CancelHotelReservation
+                waitFor: T20M
+            - step:
+                name: Hire Car
+                events:
+                  send: CarReservationRequest
+                  expect: CarReservationSuccess
+                  compensateWith: CancelCarReservation
+            - step:
+                name: Book Flight
+                events:
+                  send: FlightReservationRequest
+                  expect: FlightReservationSuccess
+                  compensateWith: CancelFlightReservation
+        - step:
+            name: Process Payment
+            events:
+              send: PaymentRequest
+              expect: PaymentSuccess
+              expectError: PaymentFailed

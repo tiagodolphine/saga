@@ -1,0 +1,35 @@
+apiVersion: examples.kogito.kie.org/v1
+kind: Saga
+metadata:
+  name: orders
+spec:
+  template:
+    spec:
+      id: orders
+      version: v1
+      name: Orders Saga
+      receive: OrderRequest
+      replyWith: OrderSuccess
+      replyErrorWith: OrderFailed
+      steps:
+        - step:
+            name: Reserve Stock
+            send: ReserveStockRequest
+            expect: StockSuccess
+            expectError: StockFailed
+            compensateWith: CancelStock
+            waitFor: PT10S
+        - step:
+            name: Schedule Shipping
+            send: ScheduleShippingRequest
+            expect: ScheduleShippingSuccess
+            expectError: ScheduleShippingFailed
+            compensateWith: CancelScheduleShipping
+            waitFor: PT10S
+        - step:
+            name: Process Payment
+            send: OrderPaymentRequest
+            expect: OrderPaymentSuccess
+            expectError: OrderPaymentFailed
+            compensateWith: CancelOrderPayment
+            waitFor: PT10S
