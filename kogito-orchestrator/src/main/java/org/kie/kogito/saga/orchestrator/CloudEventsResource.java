@@ -15,11 +15,15 @@
  */
 package org.kie.kogito.saga.orchestrator;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.NotFoundException;
@@ -29,6 +33,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.cloudevents.CloudEvent;
@@ -46,7 +51,9 @@ import org.slf4j.LoggerFactory;
 public class CloudEventsResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudEventsResource.class);
-    public static final String REQUEST_SUFFIX = "Request";
+    private static final String REQUEST_SUFFIX = "Request";
+    private static final String MICRO_SAGA = "microsaga";
+    private static final String MICRO_SAGA_REQUEST = "SagaRequest";
 
     @Inject
     CorrelationService correlationService;
@@ -73,7 +80,18 @@ public class CloudEventsResource {
         if (Objects.isNull(process)) {
             throw new NotFoundException("Saga definition not found " + sagaProcessId);
         }
-        if (eventType.endsWith(REQUEST_SUFFIX)) {
+        if (MICRO_SAGA.equals(sagaProcessId)) {
+            if(event.getType().endsWith(MICRO_SAGA_REQUEST)) {
+                try {
+                    processMicroSaga(event, process);
+                } catch (IOException e) {
+                    LOGGER.error("Unable to create micro saga", e);
+                    throw new BadRequestException();
+                }
+            } else {
+                processIntermediateMicroSagaRequest(event, process);
+            }
+        } else if (eventType.endsWith(REQUEST_SUFFIX)) {
             String sagaId = event.getSubject();
             SagaModel model = new SagaModel()
                     .setId(event.getId())
@@ -113,5 +131,49 @@ public class CloudEventsResource {
 
     private Process<SagaModel> getProcess(String processName) {
         return (Process<SagaModel>) processes.processById(processName);
+    }
+
+    private void processMicroSaga(CloudEvent event, Process<? extends Model> process) throws IOException {
+        Map<String, Object> params = new HashMap<>();
+        JsonNode jsonNode = objectMapper.readTree(event.getData());
+        params.put("requestSuccessEvent", jsonNode.get("replyWith").asText());
+        params.put("requestFailedEvent", jsonNode.get("replyErrorWith").asText());
+        JsonNode request = jsonNode.get("request");
+        params.put("requestEvent", request.get("requestEvent").asText());
+        params.put("expectedEvent", request.get("expectedEvent").asText());
+        params.put("compensationEvent", request.get("compensateWith").asText());
+        params.put("timer", request.get("waitFor").asText());
+        params.put("payload", request.get("payload").toPrettyString());
+        params.put("sagaId", event.getSubject());
+        params.put("sagaDefinitionId", MICRO_SAGA);
+        Model model = process.createModel();
+        model.fromMap(params);
+        process.createInstance(model).start();
+    }
+
+    private void processIntermediateMicroSagaRequest(CloudEvent event, Process<? extends Model> process) {
+        if (correlationService.contains(event.getSubject())) {
+            final String processInstanceId = correlationService.getProcessInstanceId(event.getSubject());
+            if (processInstanceId == null) {
+                LOGGER.warn("Ignoring unexpected event of type {}. No matching active instance.", event.getType());
+            }
+            Optional<? extends ProcessInstance<? extends Model>> processInstance = process.instances().findById(processInstanceId);
+            if (processInstance.isPresent()) {
+                LOGGER.info("Received event of type {}.", event.getType());
+                String eventType = event.getType();
+                Map<String, Object> params = processInstance.get().variables().toMap();
+                if(eventType.equals(params.get("requestEvent"))) {
+                    LOGGER.debug("Ignore loopback event");
+                    return;
+                }
+                if (eventType.equals(params.get("expectedEvent"))) {
+                    processInstance.get().send(Sig.of("Message-ExpectedEvent", "event payload", null));
+                } else {
+                    processInstance.get().send(Sig.of("Message-UnexpectedEvent", "event payload", null));
+                }
+            } else {
+                LOGGER.warn("Ignoring event of type {} with no matching process instance.", event.getType());
+            }
+        }
     }
 }
