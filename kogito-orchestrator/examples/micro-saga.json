@@ -1,11 +1,16 @@
 {
   "replyWith": "CarSagaSuccess",
   "replyErrorWith": "CarSagaFailed",
+  "completeWith": "CommitCarSaga",
+  "abortWith": "CancelCarSaga",
   "request": {
     "requestEvent": "CarReservationRequest",
     "expectedEvent": "CarReservationSuccess",
-    "compensateWith": "CancelCarReservation",
-    "waitFor": "PT1M",
+    "retry": "R/PT20M",
+    "compensate": {
+      "after": "PT1H",
+      "withEvent": "CancelCarReservation"
+    },
     "payload": {
       "driver": {
         "firstName": "Ruben",

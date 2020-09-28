@@ -40,7 +40,7 @@ public class EventEmitterService {
 
     //This extension attribute can be used for filtering out events of the same type
     //but involved services must propagate all extensions in the response cloudevent
-    private static final String SAGA_EXTENSION = "sagaid";
+    public static final String SAGA_EXTENSION = "sagaid";
 
     @Inject
     @RestClient

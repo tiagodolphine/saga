@@ -24,10 +24,10 @@ import org.kie.kogito.Model;
 @RegisterForReflection
 public class SagaModel implements Model {
 
+    private static final String SAGA_ID = "sagaId";
     private static final String ID = "id";
     private static final String PAYLOAD = "payload";
     private static final String PROCESS_INSTANCE_ID = "processInstanceId";
-    private static final String SAGA_ID = "sagaId";
     private static final String EVENT = "event";
     private static final String SAGA_DEFINITION_ID = "sagaDefinitionId";
 
