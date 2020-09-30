@@ -20,19 +20,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -67,21 +63,26 @@ public class CloudEventsResource {
     @ConfigProperty(name = "saga.process.id")
     String sagaProcessId;
 
+    private Process<? extends Model> process;
+
     @PostConstruct
     public void init() {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        process = getProcess(sagaProcessId);
+        if (Objects.isNull(process)) {
+            throw new ExceptionInInitializerError("Unable to guess what process to use");
+        }
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response receive(CloudEvent event) {
-        final String eventType = event.getType();
-        final Process<? extends Model> process = getProcess(sagaProcessId);
-        if (Objects.isNull(process)) {
-            throw new NotFoundException("Saga definition not found " + sagaProcessId);
+        if (isLoopBack(event)) {
+            LOGGER.info("Ignoring possible callback event: " + event.getType());
+            return Response.accepted().build();
         }
         if (MICRO_SAGA.equals(sagaProcessId)) {
-            if(event.getType().endsWith(MICRO_SAGA_REQUEST)) {
+            if (event.getType().endsWith(MICRO_SAGA_REQUEST)) {
                 try {
                     processMicroSaga(event, process);
                 } catch (IOException e) {
@@ -91,7 +92,7 @@ public class CloudEventsResource {
             } else {
                 processIntermediateMicroSagaRequest(event, process);
             }
-        } else if (eventType.endsWith(REQUEST_SUFFIX)) {
+        } else if (event.getType().endsWith(REQUEST_SUFFIX)) {
             String sagaId = event.getSubject();
             SagaModel model = new SagaModel()
                     .setId(event.getId())
@@ -133,6 +134,10 @@ public class CloudEventsResource {
         return (Process<SagaModel>) processes.processById(processName);
     }
 
+    private boolean isLoopBack(CloudEvent event) {
+        return !(event.getType().endsWith(REQUEST_SUFFIX) ^ event.getExtension(EventEmitterService.SAGA_EXTENSION) != null);
+    }
+
     private void processMicroSaga(CloudEvent event, Process<? extends Model> process) throws IOException {
         Map<String, Object> params = new HashMap<>();
         JsonNode jsonNode = objectMapper.readTree(event.getData());
@@ -141,8 +146,9 @@ public class CloudEventsResource {
         JsonNode request = jsonNode.get("request");
         params.put("requestEvent", request.get("requestEvent").asText());
         params.put("expectedEvent", request.get("expectedEvent").asText());
-        params.put("compensationEvent", request.get("compensateWith").asText());
-        params.put("timer", request.get("waitFor").asText());
+        JsonNode compensate = request.get("compensate");
+        params.put("compensationEvent", compensate.get("withEvent").asText());
+        params.put("timer", compensate.get("after").asText());
         params.put("payload", request.get("payload").toPrettyString());
         params.put("sagaId", event.getSubject());
         params.put("sagaDefinitionId", MICRO_SAGA);
@@ -162,7 +168,7 @@ public class CloudEventsResource {
                 LOGGER.info("Received event of type {}.", event.getType());
                 String eventType = event.getType();
                 Map<String, Object> params = processInstance.get().variables().toMap();
-                if(eventType.equals(params.get("requestEvent"))) {
+                if (eventType.equals(params.get("requestEvent"))) {
                     LOGGER.debug("Ignore loopback event");
                     return;
                 }

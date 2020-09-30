@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "reference": "9788499890951",
+      "price": 7.55,
+      "quantity": 1
+    },
+    {
+      "reference": "9788499890944",
+      "price": 9.45,
+      "quantity": 1
+    }
+  ],
+  "payment": {
+    "token": "EfZXnPFViJ3hkaM8dY4vnyvGjStYGKpT",
+    "amount": 17.00,
+    "currency": "EUR"
+  }
+}
