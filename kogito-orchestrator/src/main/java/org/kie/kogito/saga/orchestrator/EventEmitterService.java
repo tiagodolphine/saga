@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
+import org.eclipse.microprofile.lra.annotation.ws.rs.LRA;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.kie.kogito.saga.orchestrator.model.CorrelationKey;
 import org.slf4j.Logger;
@@ -52,7 +53,10 @@ public class EventEmitterService {
     @Inject
     ObjectMapper objectMapper;
 
-    public void sendRequest(String eventType, String payload, String processInstanceId, String sagaDefinitionId) {
+    @Inject
+    LRAService lraService;
+
+    public void sendRequest(String eventType, String payload, String processInstanceId, String sagaDefinitionId, String lraId) {
         LOGGER.info("sendRequest {} {}", eventType, processInstanceId);
         String message = getMessage(payload, eventType);
         String correlation = UUID.randomUUID().toString();
@@ -64,6 +68,7 @@ public class EventEmitterService {
                 .withData(message.getBytes())
                 .withDataContentType(MediaType.APPLICATION_JSON)
                 .withExtension(SAGA_EXTENSION, sagaDefinitionId)
+                .withExtension(LRA.LRA_HTTP_CONTEXT_HEADER, lraId)
                 .build();
         Response response = eventsClient.emit(event);
         if (response.getStatus() < Response.Status.BAD_REQUEST.getStatusCode()) {
@@ -88,59 +93,69 @@ public class EventEmitterService {
         }
     }
 
-    public void sendCompensation(String eventType, String processInstanceId, String compensateForType, String sagaDefinitionId) {
-        LOGGER.info("sendCompensation {} {} {}", compensateForType, eventType, processInstanceId);
-        String eventId = correlationService.getId(new CorrelationKey().setEventType(compensateForType).setProcessInstanceId(processInstanceId));
-        if (eventId != null) {
-            CloudEvent event = CloudEventBuilder.v1()
-                    .withId(UUID.randomUUID().toString())
-                    .withType(eventType)
-                    .withSource(createSource(sagaDefinitionId))
-                    .withSubject(eventId)
-                    .withDataContentType(MediaType.APPLICATION_JSON)
-                    .withExtension(SAGA_EXTENSION, sagaDefinitionId)
-                    .build();
-            eventsClient.emit(event);
-        }
+    public void sendRequestLRA(String eventType, String payload, String processInstanceId, String sagaDefinitionId, String lraId, String compensationEvent) {
+        sendRequestLRA(eventType, payload, processInstanceId, sagaDefinitionId, lraId, compensationEvent, 0);
     }
 
-    public void sendRequest2(String eventType, String payload, String processInstanceId, String sagaDefinitionId) {
+    public void sendRequestLRA(String eventType, String payload, String processInstanceId, String sagaDefinitionId, String lraId, String compensationEvent, Integer timeLimit) {
         LOGGER.info("sendRequest {} {}", eventType, processInstanceId);
+        String message = getMessage(payload, eventType);
         String correlation = UUID.randomUUID().toString();
         CloudEvent event = CloudEventBuilder.v1()
                 .withId(UUID.randomUUID().toString())
                 .withType(eventType)
                 .withSource(createSource(sagaDefinitionId))
                 .withSubject(correlation)
-                .withData(payload.getBytes())
+                .withData(message.getBytes())
                 .withDataContentType(MediaType.APPLICATION_JSON)
                 .withExtension(SAGA_EXTENSION, sagaDefinitionId)
                 .build();
         Response response = eventsClient.emit(event);
         if (response.getStatus() < Response.Status.BAD_REQUEST.getStatusCode()) {
+            String childLra = lraService.addParticipant(sagaDefinitionId, lraId, correlation, timeLimit.longValue());
             correlationService.add(correlation, new CorrelationKey()
                     .setEventType(eventType)
-                    .setProcessInstanceId(processInstanceId));
+                    .setProcessInstanceId(processInstanceId)
+                    .setProcessId(sagaDefinitionId)
+                    .setCompensationEventType(compensationEvent)
+                    .setLraId(childLra)
+            );
+        } else {
+            lraService.cancel(lraId);
         }
     }
 
-    public void sendCompensation2(String eventType, String processInstanceId, String compensateForType, String sagaDefinitionId) {
-        LOGGER.info("sendCompensation {} {} {}", compensateForType, eventType, processInstanceId);
-        String eventId = correlationService.getId(new CorrelationKey().setEventType(compensateForType).setProcessInstanceId(processInstanceId));
-        if (eventId != null) {
-            CloudEvent event = CloudEventBuilder.v1()
-                    .withId(UUID.randomUUID().toString())
-                    .withType(eventType)
-                    .withSource(createSource(sagaDefinitionId))
-                    .withSubject(eventId)
-                    .withDataContentType(MediaType.APPLICATION_JSON)
-                    .withExtension(SAGA_EXTENSION, sagaDefinitionId)
-                    .build();
-            eventsClient.emit(event);
+    public void sendCompensation(String eventType, String sagaDefinitionId) {
+        LOGGER.info("sendCompensation {} {}", eventType, sagaDefinitionId);
+        String correlation = UUID.randomUUID().toString();
+        CloudEvent event = CloudEventBuilder.v1()
+                .withId(UUID.randomUUID().toString())
+                .withType(eventType)
+                .withSource(createSource(sagaDefinitionId))
+                .withSubject(correlation)
+                .withDataContentType(MediaType.APPLICATION_JSON)
+                .withExtension(SAGA_EXTENSION, sagaDefinitionId)
+                .build();
+        eventsClient.emit(event);
+    }
+
+    public void sendResponseLRA(String eventType, String sagaId, String processInstanceId, String sagaDefinitionId, String lraId) {
+        LOGGER.info("sendResponse {} {}", eventType, processInstanceId);
+        CloudEvent event = CloudEventBuilder.v1()
+                .withId(UUID.randomUUID().toString())
+                .withType(eventType)
+                .withSource(createSource(sagaDefinitionId))
+                .withSubject(sagaId)
+                .withDataContentType(MediaType.APPLICATION_JSON)
+                .build();
+        Response response = eventsClient.emit(event);
+        if (response.getStatus() < Response.Status.BAD_REQUEST.getStatusCode()) {
+            correlationService.deleteByProcessInstanceId(processInstanceId);
+            lraService.close(lraId);
         }
     }
 
-    public String getMessage(String payload, String service) {
+    private String getMessage(String payload, String service) {
         try {
             return Optional.ofNullable(objectMapper.readValue(payload, JsonNode.class))
                     .map(node -> node.get(service))

@@ -30,6 +30,7 @@ public class SagaModel implements Model {
     private static final String PROCESS_INSTANCE_ID = "processInstanceId";
     private static final String EVENT = "event";
     private static final String SAGA_DEFINITION_ID = "sagaDefinitionId";
+    private static final String LRA_ID = "lraId";
 
     private String id;
     private String payload;
@@ -37,6 +38,7 @@ public class SagaModel implements Model {
     private String sagaId;
     private String sagaDefinitionId;
     private String event;
+    private String lraId;
 
     public String getId() {
         return id;
@@ -99,6 +101,15 @@ public class SagaModel implements Model {
         return this;
     }
 
+    public SagaModel setLraId(String lraId) {
+        this.lraId = lraId;
+        return this;
+    }
+
+    public String getLraId() {
+        return lraId;
+    }
+
     @Override
     public void update(Map<String, Object> params) {
         if (params.containsKey(ID)) {
@@ -119,6 +130,9 @@ public class SagaModel implements Model {
         if (params.containsKey(PROCESS_INSTANCE_ID)) {
             this.processInstanceId = (String) params.get(PROCESS_INSTANCE_ID);
         }
+        if (params.containsKey(LRA_ID)) {
+            this.lraId = (String) params.get(LRA_ID);
+        }
     }
 
     @Override
@@ -133,6 +147,7 @@ public class SagaModel implements Model {
         this.sagaId = (String) params.get(SAGA_ID);
         this.sagaDefinitionId = (String) params.get(SAGA_DEFINITION_ID);
         this.processInstanceId = (String) params.get(PROCESS_INSTANCE_ID);
+        this.lraId = (String) params.get(LRA_ID);
     }
 
     @Override
@@ -144,6 +159,7 @@ public class SagaModel implements Model {
         params.put(SAGA_ID, this.sagaId);
         params.put(SAGA_DEFINITION_ID, this.sagaDefinitionId);
         params.put(EVENT, this.event);
+        params.put(LRA_ID, this.lraId);
         return params;
     }
 }

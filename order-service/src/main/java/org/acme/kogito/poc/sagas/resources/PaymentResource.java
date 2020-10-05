@@ -31,13 +31,13 @@ import org.eclipse.microprofile.lra.annotation.ws.rs.LRA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Path("/orders")
+@Path("/payments")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @LRA(LRA.Type.SUPPORTS)
-public class OrderResource {
+public class PaymentResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OrderResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentResource.class);
 
     @Inject
     ObjectMapper mapper;
@@ -75,27 +75,26 @@ public class OrderResource {
     @PUT
     @Path("/cancel")
     public Uni<Response> cancel(CloudEvent event) {
-        return service.cancel(event.getSubject()).onItem().transform(id -> Response.ok().build());
+        return service.abort(UUID.fromString(event.getSubject())).onItem().transform(id -> Response.ok().build());
     }
 
     @Complete
     @PUT
     @Path("/complete")
     public Uni<Response> complete(CloudEvent event) {
-        return service.complete(event.getSubject()).onItem().transform(id -> Response.ok().build());
+        return service.complete(UUID.fromString(event.getSubject())).onItem().transform(id -> Response.ok().build());
     }
 
     @GET
     @Path("/{id}")
     @LRA(LRA.Type.NOT_SUPPORTED)
-    public Uni<OrderStatus> get(@PathParam("id") String id) {
+    public Uni<OrderStatus> get(@PathParam("id") UUID id) {
         return service.getStatus(id);
     }
 
     @DELETE
     @Path("/{id}")
-    public Response abort(@PathParam("id") String id) {
-        service.abort(id);
-        return Response.ok().build();
+    public Uni<Response> abort(@PathParam("id") UUID id) {
+        return service.abort(id).onItem().transform(orderStatus -> Response.accepted().build());
     }
 }
