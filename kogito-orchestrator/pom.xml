@@ -21,6 +21,7 @@
     <cloudevents.version>2.0.0-milestone2</cloudevents.version>
     <kogito.version>1.0.0-SNAPSHOT</kogito.version>
     <quarkus.version>1.8.0.Final</quarkus.version>
+    <narayana.version>5.10.6.Final</narayana.version>
   </properties>
 
   <dependencyManagement>
@@ -46,11 +47,6 @@
       <artifactId>quarkus-smallrye-reactive-messaging</artifactId>
     </dependency>
 
-
-<!--    <dependency>-->
-<!--      <groupId>org.kie.kogito</groupId>-->
-<!--      <artifactId>process-management-addon</artifactId>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>io.cloudevents</groupId>
       <artifactId>cloudevents-api</artifactId>
@@ -66,10 +62,12 @@
       <artifactId>cloudevents-json-jackson</artifactId>
       <version>${cloudevents.version}</version>
     </dependency>
-    <!--    <dependency>-->
-<!--      <groupId>org.kie.kogito</groupId>-->
-<!--      <artifactId>knative-eventing-addon</artifactId>-->
-<!--    </dependency>-->
+    <dependency>
+      <groupId>org.jboss.narayana.rts</groupId>
+      <artifactId>narayana-lra</artifactId>
+      <version>${narayana.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>

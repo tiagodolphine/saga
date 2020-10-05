@@ -1,0 +1,51 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: orders-saga
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containers:
+        - image: quay.io/ruben/saga-orchestrator:jvm-latest
+          env:
+            - name: BROKER_URL
+              value: http://broker-ingress.knative-eventing.svc.cluster.local/ruben-saga/default
+            - name: SAGA_PROCESS_ID
+              value: orders
+            - name: LRA_HTTP_HOST
+              value: lra-coordinator
+            - name: LRA_HTTP_PORT
+              value: "8080"
+---
+apiVersion: eventing.knative.dev/v1beta1
+kind: Trigger
+metadata:
+  name: orders-trigger
+spec:
+  broker: default
+  filter:
+    attributes:
+      type: OrderRequest
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: orders-saga
+---
+apiVersion: eventing.knative.dev/v1beta1
+kind: Trigger
+metadata:
+  name: orders-events-trigger
+spec:
+  broker: default
+  filter:
+    attributes:
+      sagaid: orders
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: orders-saga

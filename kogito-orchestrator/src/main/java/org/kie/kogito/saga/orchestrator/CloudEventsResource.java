@@ -15,30 +15,35 @@
  */
 package org.kie.kogito.saga.orchestrator;
 
-import java.io.IOException;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.cloudevents.CloudEvent;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.lra.annotation.ws.rs.LRA;
 import org.kie.kogito.Model;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.Sig;
+import org.kie.kogito.saga.orchestrator.model.CorrelationKey;
 import org.kie.kogito.saga.orchestrator.model.SagaModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +53,6 @@ public class CloudEventsResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudEventsResource.class);
     private static final String REQUEST_SUFFIX = "Request";
-    private static final String MICRO_SAGA = "microsaga";
-    private static final String MICRO_SAGA_REQUEST = "SagaRequest";
 
     @Inject
     CorrelationService correlationService;
@@ -65,6 +68,12 @@ public class CloudEventsResource {
 
     private Process<? extends Model> process;
 
+    @Inject
+    LRAService lraService;
+
+    @Inject
+    EventEmitterService emitterService;
+
     @PostConstruct
     public void init() {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -72,6 +81,7 @@ public class CloudEventsResource {
         if (Objects.isNull(process)) {
             throw new ExceptionInInitializerError("Unable to guess what process to use");
         }
+
     }
 
     @POST
@@ -81,24 +91,15 @@ public class CloudEventsResource {
             LOGGER.info("Ignoring possible callback event: " + event.getType());
             return Response.accepted().build();
         }
-        if (MICRO_SAGA.equals(sagaProcessId)) {
-            if (event.getType().endsWith(MICRO_SAGA_REQUEST)) {
-                try {
-                    processMicroSaga(event, process);
-                } catch (IOException e) {
-                    LOGGER.error("Unable to create micro saga", e);
-                    throw new BadRequestException();
-                }
-            } else {
-                processIntermediateMicroSagaRequest(event, process);
-            }
-        } else if (event.getType().endsWith(REQUEST_SUFFIX)) {
+        if (event.getType().endsWith(REQUEST_SUFFIX)) {
             String sagaId = event.getSubject();
+            String lraUri = lraService.start(sagaProcessId);
             SagaModel model = new SagaModel()
                     .setId(event.getId())
                     .setPayload(event.getData())
                     .setSagaId(sagaId)
-                    .setSagaDefinitionId(sagaProcessId);
+                    .setSagaDefinitionId(sagaProcessId)
+                    .setLraId(lraUri);
             ProcessInstance<? extends Model> instance = process.createInstance(sagaId, createDomainModel(process, model));
             instance.start();
             LOGGER.info("Started new {} instance.", sagaProcessId);
@@ -106,6 +107,30 @@ public class CloudEventsResource {
             processIntermediateEvent(event, process);
         }
         return Response.accepted().build();
+    }
+
+    @Context
+    HttpHeaders httpHeaders;
+
+    @PUT
+    @Path("/{correlationId}/" + LRAService.COMPENSATE)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response compensate(@PathParam("correlationId") String correlationId) {
+        CorrelationKey correlationKey = correlationService.get(correlationId);
+        if(correlationKey == null) {
+            LOGGER.info("Unable to compensate process with missing correlationId: {}. Try to clean up.", correlationId);
+            Optional<List<String>> lraHeader = httpHeaders.getRequestHeaders().entrySet().stream().filter(e -> e.getKey().equals(LRA.LRA_HTTP_CONTEXT_HEADER)).map(Map.Entry::getValue).findFirst();
+            if(lraHeader.isPresent()) {
+                lraService.cancel(lraHeader.get().get(0));
+            }
+            throw new NotFoundException();
+        }
+        emitterService.sendCompensation(correlationKey.getCompensationEventType(), correlationKey.getProcessId());
+        SagaModel sagaModel = new SagaModel();
+        sagaModel.fromMap(process.instances().findById(correlationKey.getProcessInstanceId()).get().variables().toMap());
+        lraService.cancel(sagaModel.getLraId());
+        return Response.ok().build();
+
     }
 
     private Model createDomainModel(Process<? extends Model> process, SagaModel model) {
@@ -116,14 +141,17 @@ public class CloudEventsResource {
 
     private void processIntermediateEvent(CloudEvent event, Process<? extends Model> process) {
         if (correlationService.contains(event.getSubject())) {
-            final String processInstanceId = correlationService.getProcessInstanceId(event.getSubject());
-            if (processInstanceId == null) {
+            CorrelationKey correlationKey = correlationService.get(event.getSubject());
+            if (correlationKey == null) {
                 LOGGER.warn("Ignoring unexpected event of type {}. No matching active instance.", event.getType());
+                return;
             }
+            final String processInstanceId = correlationKey.getProcessInstanceId();
             Optional<? extends ProcessInstance<? extends Model>> processInstance = process.instances().findById(processInstanceId);
             if (processInstance.isPresent()) {
                 LOGGER.info("Received event of type {}.", event.getType());
                 processInstance.get().send(Sig.of("Message-" + event.getType(), "event payload", null));
+                lraService.close(correlationKey.getLraId());
             } else {
                 LOGGER.warn("Ignoring event of type {} with no matching process instance.", event.getType());
             }
@@ -138,48 +166,4 @@ public class CloudEventsResource {
         return !(event.getType().endsWith(REQUEST_SUFFIX) ^ event.getExtension(EventEmitterService.SAGA_EXTENSION) != null);
     }
 
-    private void processMicroSaga(CloudEvent event, Process<? extends Model> process) throws IOException {
-        Map<String, Object> params = new HashMap<>();
-        JsonNode jsonNode = objectMapper.readTree(event.getData());
-        params.put("requestSuccessEvent", jsonNode.get("replyWith").asText());
-        params.put("requestFailedEvent", jsonNode.get("replyErrorWith").asText());
-        JsonNode request = jsonNode.get("request");
-        params.put("requestEvent", request.get("requestEvent").asText());
-        params.put("expectedEvent", request.get("expectedEvent").asText());
-        JsonNode compensate = request.get("compensate");
-        params.put("compensationEvent", compensate.get("withEvent").asText());
-        params.put("timer", compensate.get("after").asText());
-        params.put("payload", request.get("payload").toPrettyString());
-        params.put("sagaId", event.getSubject());
-        params.put("sagaDefinitionId", MICRO_SAGA);
-        Model model = process.createModel();
-        model.fromMap(params);
-        process.createInstance(model).start();
-    }
-
-    private void processIntermediateMicroSagaRequest(CloudEvent event, Process<? extends Model> process) {
-        if (correlationService.contains(event.getSubject())) {
-            final String processInstanceId = correlationService.getProcessInstanceId(event.getSubject());
-            if (processInstanceId == null) {
-                LOGGER.warn("Ignoring unexpected event of type {}. No matching active instance.", event.getType());
-            }
-            Optional<? extends ProcessInstance<? extends Model>> processInstance = process.instances().findById(processInstanceId);
-            if (processInstance.isPresent()) {
-                LOGGER.info("Received event of type {}.", event.getType());
-                String eventType = event.getType();
-                Map<String, Object> params = processInstance.get().variables().toMap();
-                if (eventType.equals(params.get("requestEvent"))) {
-                    LOGGER.debug("Ignore loopback event");
-                    return;
-                }
-                if (eventType.equals(params.get("expectedEvent"))) {
-                    processInstance.get().send(Sig.of("Message-ExpectedEvent", "event payload", null));
-                } else {
-                    processInstance.get().send(Sig.of("Message-UnexpectedEvent", "event payload", null));
-                }
-            } else {
-                LOGGER.warn("Ignoring event of type {} with no matching process instance.", event.getType());
-            }
-        }
-    }
 }

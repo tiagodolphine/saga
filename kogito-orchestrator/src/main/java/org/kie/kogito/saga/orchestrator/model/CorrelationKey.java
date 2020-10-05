@@ -21,6 +21,9 @@ public class CorrelationKey {
 
     private String processInstanceId;
     private String eventType;
+    private String processId;
+    private String compensationEventType;
+    private String lraId;
 
     public String getProcessInstanceId() {
         return processInstanceId;
@@ -40,13 +43,42 @@ public class CorrelationKey {
         return this;
     }
 
+    public String getProcessId() {
+        return processId;
+    }
+
+    public CorrelationKey setProcessId(String processId) {
+        this.processId = processId;
+        return this;
+    }
+
+    public String getCompensationEventType() {
+        return compensationEventType;
+    }
+
+    public CorrelationKey setCompensationEventType(String compensationEventType) {
+        this.compensationEventType = compensationEventType;
+        return this;
+    }
+
+    public CorrelationKey setLraId(String lraId) {
+        this.lraId = lraId;
+        return this;
+    }
+
+    public String getLraId() {
+        return lraId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CorrelationKey)) return false;
         CorrelationKey that = (CorrelationKey) o;
-        return Objects.equals(processInstanceId, that.processInstanceId) &&
-                Objects.equals(eventType, that.eventType);
+        return Objects.equals(processInstanceId, that.processInstanceId)
+                && Objects.equals(eventType, that.eventType)
+                && Objects.equals(processId, that.processId)
+                && Objects.equals(compensationEventType, that.compensationEventType);
     }
 
     @Override
